@@ -86,3 +86,25 @@ const NavItem = ({ category, handleOpen, isOpen, isAnyOpen }: NavItemProps) => {
 };
 
 export default NavItem;
+
+// interface Options {
+//   style?: string,
+//   currency?: "USD" | "EUR" | "GBP" | "BDT" | "UAH" |"RUR" | "JPY",
+//   notation?: Intl.NumberFormatOptions["notation"],
+//   maximumFractionDigits?: number,
+  
+// }
+
+// const options: Options = {
+//   style: "currency",
+//   currency: "USD",
+//   notation: "compact",
+//   maximumFractionDigits: 2,
+// };
+
+// const number = 12.34675;
+// const formatedNumber = new Intl.NumberFormat("en-US", options).format(number);
+
+// console.log(formatedNumber);
+
+
