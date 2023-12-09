@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Icons } from "@/components/Icons";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -24,8 +24,13 @@ const Page = () => {
     resolver: zodResolver(authCredentialsValidator),
   });
 
-  const {data} = trpc.anyApiRoutes.useQuery()
+  const { data } = trpc.anyApiRoutes.useQuery();
   console.log("Page  data:", data);
+
+  const { data: myData } = trpc.myNewRoute.useQuery('Djon',{
+    refetchOnWindowFocus: false,
+  });
+  console.log("Page  myData:", myData);
 
   const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {};
   return (
@@ -53,6 +58,8 @@ const Page = () => {
                 <div className="grid gap-1 py-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
+                    id="email"
+                    type="email"
                     {...register("email")}
                     className={cn({
                       "focus-visible:ring-red-500": errors.email,
@@ -64,6 +71,8 @@ const Page = () => {
                 <div className="grid gap-1 py-2">
                   <Label htmlFor="password">Password</Label>
                   <Input
+                    id="password"
+                    type="password"
                     {...register("password")}
                     className={cn({
                       "focus-visible:ring-red-500": errors.password,
