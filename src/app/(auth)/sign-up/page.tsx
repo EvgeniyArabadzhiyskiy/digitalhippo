@@ -24,15 +24,23 @@ const Page = () => {
     resolver: zodResolver(authCredentialsValidator),
   });
 
-  const { data } = trpc.anyApiRoutes.useQuery();
-  console.log("Page  data:", data);
+  // const { data } = trpc.anyApiRoutes.useQuery();
+  // console.log("Page  data:", data);
 
-  const { data: myData } = trpc.myNewRoute.useQuery('Djon',{
-    refetchOnWindowFocus: false,
+  // const { data: myData } = trpc.myNewRoute.useQuery('Djon',{
+  //   refetchOnWindowFocus: false,
+  // });
+  // console.log("Page  myData:", myData);
+
+  const { mutate } = trpc.auth.createPayloadUser.useMutation({
+    onSuccess: (data) => {
+      console.log("Page  data:", data);
+    },
   });
-  console.log("Page  myData:", myData);
 
-  const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {};
+  const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {
+    mutate({ email, password });
+  };
   return (
     <>
       <div className="container reletive pt-20 flex flex-col items-center justify-center lg:px-0">
@@ -72,7 +80,7 @@ const Page = () => {
                   <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
-                    type="password"
+                    // type="password"
                     {...register("password")}
                     className={cn({
                       "focus-visible:ring-red-500": errors.password,
