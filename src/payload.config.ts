@@ -6,6 +6,8 @@ import { buildConfig } from "payload/config";
 import { Users } from "./collections/Users";
 import dotenv from "dotenv";
 
+// https://github.com/payloadcms/payload/blob/main/examples/custom-server/src/payload.config.ts
+
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),
 });
