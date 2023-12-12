@@ -4,6 +4,8 @@ import { nextApp, nextHandler } from "./next-utils";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { appRouter } from "./trpc";
 
+// https://github.com/payloadcms/payload/blob/main/examples/custom-server/src/server.ts
+
 const app = express();
 
 const PORT = Number(process.env.PORT) || 3000;
