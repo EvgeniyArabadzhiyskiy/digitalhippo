@@ -3,32 +3,32 @@ import path from "path";
 import payload, { Payload } from "payload";
 import type { InitOptions } from "payload/config";
 import nodemailer from "nodemailer";
-import nodemailerSendgrid from 'nodemailer-sendgrid'
 
-const sendGridAPIKey = process.env.SENDGRID_API_KEY
+// import nodemailerSendgrid from 'nodemailer-sendgrid'
+// const sendGridAPIKey = process.env.SENDGRID_API_KEY
+// const transporter = nodemailer.createTransport(
+//   nodemailerSendgrid({
+//       apiKey: process.env.SENDGRID_API_KEY || ''
+//   })
+// );
+
+
 
 // https://github.com/payloadcms/payload/blob/main/examples/custom-server/src/getPayload.ts
-
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),
 });
 
 // https://resend.com/docs/send-with-nodemailer-smtp
-// const transporter = nodemailer.createTransport({
-//   host: "smtp.resend.com",
-//   secure: true,
-//   port: 465,
-//   auth: {
-//     user: "resend",
-//     pass: process.env.RESEND_API_KEY,
-//   },
-// });
-
-const transporter = nodemailer.createTransport(
-  nodemailerSendgrid({
-      apiKey: process.env.SENDGRID_API_KEY || ''
-  })
-);
+const transporter = nodemailer.createTransport({
+  host: "smtp.resend.com",
+  secure: true,
+  port: 465,
+  auth: {
+    user: "resend",
+    pass: process.env.RESEND_API_KEY,
+  },
+});
 
 let cashed = (global as any).payload;
 
@@ -58,6 +58,7 @@ export const getPayloadClient = async ({
 
   if (!cashed.promise) {
     cashed.promise = payload.init({
+
       // ...(sendGridAPIKey
       //   ? {
       //       email: {
@@ -70,11 +71,13 @@ export const getPayloadClient = async ({
       //     }
       //   : {}),
 
+
+
       // https://payloadcms.com/docs/email/overview#use-a-custom-nodemailer-transport
       email: {
-        fromName: "Admin Digital Hippo",
-        fromAddress: "djon4292@gmail.com",
         transport: transporter,
+        fromName: "DigitalHippo",
+        fromAddress: "onboarding@resend.dev",
       },
 
       secret: process.env.PAYLOAD_SECRET,
@@ -93,23 +96,3 @@ export const getPayloadClient = async ({
   return cashed.client;
 };
 
-
-// const sgMail = require("@sendgrid/mail");
-
-// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-// async function sendVerification(email, token) {
-//   const msg = {
-//     to: email,
-//     from: "djon4292@gmail.com",
-//     subject: "VERIFYCATION",
-//     text: `http://localhost:8080/api/auth/verify/${token}`,
-//     html: `<a href="http://localhost:8080/api/auth/verify/${token}" >VERIFYCATION CODE</a>`,
-//   };
-
-//   try {
-//     await sgMail.send(msg);
-//   } catch (error) {
-//     throw new Error("Error in sgMail");
-//   }
-// }
