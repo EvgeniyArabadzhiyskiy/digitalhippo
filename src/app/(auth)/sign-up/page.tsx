@@ -19,6 +19,7 @@ const Page = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<TAuthCredentialsValidator>({
     resolver: zodResolver(authCredentialsValidator),
@@ -40,6 +41,7 @@ const Page = () => {
 
   const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {
     mutate({ email, password });
+    reset();
   };
   return (
     <>
