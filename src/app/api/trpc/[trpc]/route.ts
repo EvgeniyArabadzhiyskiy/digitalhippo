@@ -1,4 +1,5 @@
 import { appRouter } from "@/trpc";
+import { ExpressContext } from "@/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 const handler = (req: Request) => {
@@ -6,7 +7,9 @@ const handler = (req: Request) => {
     endpoint: "/api/trps",
     req,
     router: appRouter,
-    createContext: () => ({}),
+    createContext: () => {
+      return {} as ExpressContext;
+    },
   });
 };
 
