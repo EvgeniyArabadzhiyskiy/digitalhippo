@@ -4,8 +4,15 @@ import { Icons } from "./Icons";
 import MaxWidthWrapper from "./MaxWidthWrapper";
 import NavItems from "./NavItems";
 import { buttonVariants } from "./ui/button";
+import { cookies } from "next/headers";
+import { getServerSideUser } from "@/lib/payload-utils";
 
 const Navbar = () => {
+  // const token = cookies().get('payload-token')?.value || null
+
+  const token = getServerSideUser();
+  // console.log("Navbar  token:", token);
+
   const user = null;
 
   return (
