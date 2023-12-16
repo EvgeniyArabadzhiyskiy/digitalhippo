@@ -25,6 +25,7 @@ export default function RootLayout({
       >
         <main className="relative flex flex-col min-h-screen">
           <Providers>
+          {/* @ts-expect-error Async Server Component */}
             <Navbar />
             <div className="flex-grow flex-1">{children}</div>
           </Providers>
