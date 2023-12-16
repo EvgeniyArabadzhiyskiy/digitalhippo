@@ -6,14 +6,12 @@ import NavItems from "./NavItems";
 import { buttonVariants } from "./ui/button";
 import { cookies } from "next/headers";
 import { getServerSideUser } from "@/lib/payload-utils";
+import UserAccountNav from "./UserAccountNav";
 
-const Navbar = () => {
-  // const token = cookies().get('payload-token')?.value || null
+const Navbar = async () => {
+  const nextCookies = cookies();
 
-  const token = getServerSideUser();
-  // console.log("Navbar  token:", token);
-
-  const user = null;
+  const { user, token } = await getServerSideUser(nextCookies);
 
   return (
     <div className="bg-white sticky z-50 top-0 inset-x-0 h-16">
@@ -47,7 +45,9 @@ const Navbar = () => {
                     <span className="h-6 w-px bg-gray-200" aria-hidden="true" />
                   )}
 
-                  {user ? null : (
+                  {user ? (
+                    <UserAccountNav user={user} />
+                  ) : (
                     <Link
                       href="/sign-up"
                       className={buttonVariants({ variant: "ghost" })}
