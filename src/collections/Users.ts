@@ -10,17 +10,23 @@ export const Users: CollectionConfig = {
     },
   },
   access: {
-    read: () => true,
-    create: () => true,
+    // read: () => true,
+    // create: () => true,
+    create: ({ req }) => req.user.role === "admin",
+    update: ({ req }) => req.user.role === "admin",
+    // delete: ({ req }) => req.user.role === "admin",
   },
   fields: [
     {
       name: "role",
       defaultValue: "user",
       required: true,
-      //   admin: {
-      //     condition: () => false,
-      //   },
+        // admin: {
+        //   condition: (data, sec, {user}: {user: Partial<User>}) => {
+        //     const isAdmin = user.role === "admin";
+        //     return false
+        //   },
+        // },
       type: "select",
       options: [
         { label: "Admin", value: "admin" },
