@@ -1,13 +1,68 @@
 import { PRODUCT_CATEGORIES } from "../../config";
-import { User } from "@/payload-types";
-import { CollectionConfig } from "payload/types";
+import { Product, User } from "@/payload-types";
+import { Access, CollectionConfig, Condition } from "payload/types";
+import { isAdmin, isAdminFieldLevel } from "../Users";
+
+const isAdminCondition: Condition<any, any> = (data, siblingData, {user}: {user: Partial<User>}) => {
+  const isAdmin = user.role === "admin"
+return isAdmin
+}
+
+const isMyProducts: Access<any, User> = ({ req: { user }}) => {
+  if (user) {
+    const isAdmin = user?.role === "admin";
+
+    if (isAdmin) {
+      return true;
+    }
+
+    const resultObject = {
+      user: {
+        equals: user.id,
+      },
+    }
+
+    return resultObject
+  }
+
+  return false;
+};
+
+const myProducts: Access = ({ req: { user }}) => {
+  // console.log("SITES", user?.sites);
+  // console.log("ROLE", user?.role);
+  if (user) {
+    const isAdmin = user?.role === "admin";
+
+    if (isAdmin) {
+      return true;
+    }
+
+    const resultObject = {
+      user: {
+        equals: user.id,
+      },
+    }
+
+    return resultObject
+  }
+
+  return false;
+};
 
 export const Products: CollectionConfig = {
   slug: "products",
   admin: {
     useAsTitle: "name",
   },
-  access: {},
+
+  access: {
+    read: isMyProducts,
+    create: () => true,
+    update: isAdmin,
+    delete: isAdmin,
+  },
+
   fields: [
     {
       name: "user",
@@ -19,13 +74,12 @@ export const Products: CollectionConfig = {
       },
       hasMany: false, // один продукт не может быть создан несколькими людьми
       admin: {
-        // condition: () => false, // скрыть это поле из панели администратора, и это буквально все, что оно делает
+        condition: () => false, // скрыть это поле из панели администратора
+        // condition: (data, siblingData, { user }: { user: Partial<User> }) => {
+        //   const isAdmin = user.role === "admin";
 
-        condition: (data, siblingData, { user }: { user: Partial<User> }) => {
-          const isAdmin = user.role === "admin";
-
-          return isAdmin;
-        },
+        //   return isAdmin;
+        // },
       },
     },
 
@@ -40,6 +94,12 @@ export const Products: CollectionConfig = {
       name: "description",
       label: "Product details",
       type: "textarea",
+      defaultValue: () => "Djon create this product",
+
+      access: {
+        create: isAdminFieldLevel,
+        update: () => true,
+      }
     },
 
     {
@@ -74,9 +134,9 @@ export const Products: CollectionConfig = {
       name: "approvedForSale",
       label: "Product Status",
       access: {
-        create: ({ req }) => req.user.role === "admin",
-        read: ({ req }) => req.user.role === "admin",
-        update: ({ req }) => req.user.role === "admin",
+        create: isAdminFieldLevel,
+        read: isAdminFieldLevel,
+        update: isAdminFieldLevel,
       },
       defaultValue: "pending",
       type: "select",
@@ -100,7 +160,7 @@ export const Products: CollectionConfig = {
       name: "priceId",
       access: {
         create: () => false,
-        // read: () => false,
+        read: () => false,
         update: () => false,
       },
       type: "text",
