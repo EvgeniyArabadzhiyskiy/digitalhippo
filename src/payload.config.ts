@@ -6,6 +6,7 @@ import { buildConfig } from "payload/config";
 import { Users } from "./collections/Users";
 import dotenv from "dotenv";
 import { Products } from "./collections/Products/Products";
+import { Sites } from "./collections/Sites";
 
 // https://github.com/payloadcms/payload/blob/main/examples/custom-server/src/payload.config.ts
 
@@ -15,7 +16,7 @@ dotenv.config({
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || "",
-  collections: [Users, Products],
+  collections: [Users, Products, Sites],
   routes: {
     admin: "/sell",
   },
