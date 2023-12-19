@@ -1,7 +1,7 @@
 import { User } from "@/payload-types";
-import { CollectionConfig, FieldAccess ,Access } from "payload/types";
+import { CollectionConfig, FieldAccess, Access } from "payload/types";
 
-export const adminsAndUser: Access<any, User> = ({ req: { user }}) => {
+export const adminsAndUser: Access<any, User> = ({ req: { user } }) => {
   // console.log("user:", user);
   if (user) {
     const isAdmin = user?.role === "admin";
@@ -14,41 +14,48 @@ export const adminsAndUser: Access<any, User> = ({ req: { user }}) => {
       id: {
         equals: user.id,
       },
-    }
+    };
     // console.log("resultObject============", resultObject);
 
-    return resultObject
+    return resultObject;
   }
 
   return false;
 };
 
-export const isAdmin: Access<any, User> = ({ req: { user }}) => {
+export const isAdmin: Access<any, User> = ({ req: { user } }) => {
   const isAdmin = user?.role === "admin";
   return isAdmin;
 };
- 
-export const isAdminFieldLevel: FieldAccess<{ id: string }, unknown, User> = ({ req: { user }}) => {
-  const isAdmin = user?.role === 'admin';
+
+export const isAdminFieldLevel: FieldAccess<{ id: string }, unknown, User> = ({
+  req: { user },
+}) => {
+  const isAdmin = user?.role === "admin";
   return isAdmin;
 };
 
 export const Users: CollectionConfig = {
   slug: "users",
+  admin: {
+    useAsTitle: "role",
+  },
+
   auth: {
     verify: {
       generateEmailHTML: ({ token, user }) => {
         return `<a href='${process.env.NEXT_PUBLIC_SERVER_URL}/verify-email?token=${token}&email=${user.email}'>Verify account</a>`;
       },
     },
+    // depth: 0,
   },
   access: {
     read: adminsAndUser,
-    create: isAdmin,  // create:() => true,
+    create: isAdmin, // create:() => true,
 
     update: adminsAndUser, // isAdmin
     delete: isAdmin,
-    
+
     // delete: ({ req }) => req.user.role === "admin",
   },
   fields: [
@@ -76,7 +83,7 @@ export const Users: CollectionConfig = {
       options: [
         { label: "Admin", value: "admin" },
         { label: "User", value: "user" },
-        { label: "Guest", value: "guest" },
+        // { label: "Guest", value: "guest" },
       ],
     },
 
@@ -84,6 +91,7 @@ export const Users: CollectionConfig = {
       name: "sites",
       type: "relationship",
       relationTo: "sites",
+      hasMany: true,
       access: {
         create: isAdminFieldLevel,
         update: isAdminFieldLevel,
@@ -95,6 +103,6 @@ export const Users: CollectionConfig = {
       //     return true
       //   }
       // }
-    }
+    },
   ],
 };
