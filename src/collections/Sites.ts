@@ -1,57 +1,27 @@
-import { User } from "@/payload-types";
 import { Access, CollectionConfig } from "payload/types";
 import { isAdmin } from "./Users";
 
-const isMySites: Access<any, User> = ({ req: { user } }) => {
-  console.log("user:", user);
-  if (user) {
-    const isAdmin = user?.role === "admin";
-
-    if (isAdmin) {
-      return true;
-    }
-
-    return {
-      id: {
-        equals: "65809a55626ddfc97d71c197",
-      },
-    };
-  }
-
-  return false;
-};
-
-const isAdminOrHasSiteAccess = (siteIDFieldName: string): Access => {
+export const isAdminOrHasSiteAccess = (
+  siteIDFieldName: string = "site"
+): Access => {
   return ({ req: { user } }) => {
+    const sitesID = user.sites.map(({ id }: { id: string }) => id);
+
     if (user) {
       if (user.role === "admin") return true;
 
-      if (user.role === "user") {
-        const result = {
-          or: [
-            // {
-            //   [siteIDFieldName]: {
-            //     in: user.sites.id,
-            //   },
-            // },
-            //   {
-            //     [siteIDFieldName]: {
-            //       equals: user.sites,
-            //     },
-            //   },
-            //   {
-            //     id: {
-            //       exists: false,
-            //     }
-            //   }
-          ],
-        };
-        // console.log("return  result:", result.or[0].id);
+      if (user.role === "user" && user.sites?.length > 0) {
         return {
           or: [
+            // {
+            //   [siteIDFieldName]: {           // при depth в Users.auth.depth = 0
+            //     in: user.sites,
+            //   },
+            // },
+
             {
-              [siteIDFieldName]: {
-                in: user.sites.id,
+              [siteIDFieldName]: {              // при depth в Users.auth.depth = 1
+                in: sitesID,
               },
             },
             {
@@ -59,17 +29,11 @@ const isAdminOrHasSiteAccess = (siteIDFieldName: string): Access => {
                 exists: false,
               },
             },
-
-            // {
-            //     [siteIDFieldName]: {
-            //     equals: user.sites.id,
-            //   },
-            // },
           ],
         };
-
-        return true;
       }
+
+      return false;
     }
 
     return false;
@@ -81,10 +45,13 @@ export const Sites: CollectionConfig = {
   admin: {
     useAsTitle: "title",
   },
+  // versions: {
+  //   drafts: true
+  // },
 
   access: {
     read: isAdminOrHasSiteAccess("id"),
-    // read: isMySites,
+    // read: () => true,
     create: isAdmin,
     update: isAdmin,
     delete: isAdmin,
