@@ -182,25 +182,25 @@ export const Products: CollectionConfig = {
       },
     },
 
-    // {
-    //   name: "images",
-    //   label: "Product image",
-    //   type: "array",
-    //   minRows: 1,
-    //   maxRows: 4,
-    //   required: true,
-    //   labels: {
-    //     singular: "Image",
-    //     plural: "Images",
-    //   },
-    //   fields: [
-    //     {
-    //       name: "image",
-    //       type: "upload",
-    //       relationTo: "media",
-    //       required: true,
-    //     },
-    //   ],
-    // },
+    {
+      name: "images",
+      label: "Product image",
+      type: "array",
+      minRows: 1,
+      maxRows: 4,
+      required: true,
+      labels: {
+        singular: "Image",
+        plural: "Images",
+      },
+      fields: [
+        {
+          name: "image",
+          type: "upload",
+          relationTo: "media",
+          required: true,
+        },
+      ],
+    },
   ],
 };
