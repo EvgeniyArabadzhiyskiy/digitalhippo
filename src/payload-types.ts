@@ -10,15 +10,19 @@ export interface Config {
   collections: {
     users: User;
     products: Product;
+    sites: Site;
+    media: Media;
+    pages: Page;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
   globals: {};
 }
 export interface User {
+  products: never[];
   id: string;
-  role: 'admin' | 'user' | 'guest';
-  sites?: (string | null) | Product;
+  role: 'admin' | 'user';
+  sites?: (string | Site)[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -32,6 +36,12 @@ export interface User {
   lockUntil?: string | null;
   password: string | null;
 }
+export interface Site {
+  id: string;
+  title: string;
+  updatedAt: string;
+  createdAt: string;
+}
 export interface Product {
   id: string;
   user?: (string | null) | User;
@@ -42,8 +52,63 @@ export interface Product {
   approvedForSale?: ('pending' | 'approved' | 'denied') | null;
   priceId?: string | null;
   stripeId?: string | null;
+  images: {
+    image: string | Media;
+    id?: string | null;
+  }[];
   updatedAt: string;
   createdAt: string;
+}
+export interface Media {
+  id: string;
+  user?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    tablet?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+export interface Page {
+  id: string;
+  title: string;
+  content?:
+    | {
+        [k: string]: unknown;
+      }[]
+    | null;
+  site: string | Site;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 export interface PayloadPreference {
   id: string;
