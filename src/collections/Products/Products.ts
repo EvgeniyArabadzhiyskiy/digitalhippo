@@ -3,36 +3,18 @@ import { Product, User } from "@/payload-types";
 import { Access, CollectionConfig, Condition } from "payload/types";
 import { isAdmin, isAdminFieldLevel } from "../Users";
 
-const isAdminCondition: Condition<any, any> = (data, siblingData, {user}: {user: Partial<User>}) => {
-  const isAdmin = user.role === "admin"
-return isAdmin
-}
-
-const isMyProducts: Access<any, User> = ({ req: { user }}) => {
-  if (user) {
-    const isAdmin = user?.role === "admin";
-
-    if (isAdmin) {
-      return true;
-    }
-
-    const resultObject = {
-      user: {
-        equals: user.id,
-      },
-    }
-
-    return resultObject
-  }
-
-  return false;
+const isAdminCondition: Condition<any, any> = (
+  data,
+  siblingData,
+  { user }: { user: Partial<User> }
+) => {
+  const isAdmin = user.role === "admin";
+  return isAdmin;
 };
 
-const myProducts: Access = ({ req: { user }}) => {
-  // console.log("SITES", user?.sites);
-  // console.log("ROLE", user?.role);
+const isMyProducts: Access<any, User> = ({ req: { user } }) => {
   if (user) {
-    const isAdmin = user?.role === "admin";
+    const isAdmin = user?.role === 'admin';
 
     if (isAdmin) {
       return true;
@@ -42,9 +24,9 @@ const myProducts: Access = ({ req: { user }}) => {
       user: {
         equals: user.id,
       },
-    }
+    };
 
-    return resultObject
+    return resultObject;
   }
 
   return false;
@@ -52,6 +34,18 @@ const myProducts: Access = ({ req: { user }}) => {
 
 export const Products: CollectionConfig = {
   slug: "products",
+  hooks: {
+    beforeChange: [
+      async ({ req, data }) => {
+        const user = req.user as User;
+
+        return {
+          ...data,
+          user: user.id,
+        };
+      },
+    ],
+  },
   admin: {
     useAsTitle: "name",
   },
@@ -69,9 +63,9 @@ export const Products: CollectionConfig = {
       relationTo: "users",
       type: "relationship",
       required: true,
-      defaultValue: ({ user }: { user: User }) => {
-        return user.id;
-      },
+      // defaultValue: ({ user }: { user: User }) => {
+      //   return user.id;
+      // },
       hasMany: false, // один продукт не может быть создан несколькими людьми
       admin: {
         condition: () => false, // скрыть это поле из панели администратора
@@ -99,7 +93,7 @@ export const Products: CollectionConfig = {
       access: {
         create: isAdminFieldLevel,
         update: () => true,
-      }
+      },
     },
 
     {
@@ -182,25 +176,25 @@ export const Products: CollectionConfig = {
       },
     },
 
-    {
-      name: "images",
-      label: "Product image",
-      type: "array",
-      minRows: 1,
-      maxRows: 4,
-      required: true,
-      labels: {
-        singular: "Image",
-        plural: "Images",
-      },
-      fields: [
-        {
-          name: "image",
-          type: "upload",
-          relationTo: "media",
-          required: true,
-        },
-      ],
-    },
+    // {
+    //   name: "images",
+    //   label: "Product image",
+    //   type: "array",
+    //   minRows: 1,
+    //   maxRows: 4,
+    //   required: true,
+    //   labels: {
+    //     singular: "Image",
+    //     plural: "Images",
+    //   },
+    //   fields: [
+    //     {
+    //       name: "image",
+    //       type: "upload",
+    //       relationTo: "media",
+    //       required: true,
+    //     },
+    //   ],
+    // },
   ],
 };
