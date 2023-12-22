@@ -2,6 +2,7 @@ import { PRODUCT_CATEGORIES } from "../../config";
 import { Product, User } from "@/payload-types";
 import { Access, CollectionConfig, Condition } from "payload/types";
 import { isAdmin, isAdminFieldLevel } from "../Users";
+import payload from "payload";
 
 const isAdminCondition: Condition<any, any> = (
   data,
@@ -12,9 +13,24 @@ const isAdminCondition: Condition<any, any> = (
   return isAdmin;
 };
 
-const isMyProducts: Access<any, User> = ({ req: { user } }) => {
+const isMyProducts: Access<any, User> = async ({ req: { user } }) => {
   if (user) {
     const isAdmin = user?.role === 'admin';
+
+    const { docs: products } = await payload.find({
+      collection: "products",
+      depth: 0,
+      where: {
+        user: {
+          equals: user.id,
+        },
+      },
+    });
+    
+    const ownProductFileIds = products
+    .map((prod) => prod.product_files)
+    .flat()
+    console.log("&&&&&&&&&&&&&&&&&ownProductFileIds:", ownProductFileIds);
 
     if (isAdmin) {
       return true;
@@ -115,14 +131,14 @@ export const Products: CollectionConfig = {
       required: true,
     },
 
-    // {
-    //   name: "product_files",
-    //   label: "Product file(s)",
-    //   type: "relationship",
-    //   relationTo: "product_files",
-    //   required: true,
-    //   hasMany: true,
-    // },
+    {
+      name: "product_files",
+      label: "Product file(s)",
+      type: "relationship",
+      relationTo: "product_files",
+      required: true,
+      hasMany: true,
+    },
 
     {
       name: "approvedForSale",
