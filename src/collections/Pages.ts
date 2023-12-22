@@ -2,18 +2,13 @@ import { Access, CollectionConfig, PayloadRequest } from "payload/types";
 import { isAdminOrHasSiteAccess } from "./Sites";
 import { isAdmin } from "./Users";
 import { Site, User } from "@/payload-types";
-import { AccessResult } from "payload/dist/exports/config";
 
 export const isLoggedIn: Access<any, User> = ({ req: { user } }) => {
   // Return true if user is logged in, false if not
   return Boolean(user);
 };
 
-const isAdminOrHasSiteAccessOrPublished: Access = ({
-  req,
-}: {
-  req: PayloadRequest;
-}) => {
+const isAdminOrHasSiteAccessOrPublished: Access = ({ req }) => {
   const user = req.user as User | undefined;
 
   if (user) {
@@ -25,6 +20,8 @@ const isAdminOrHasSiteAccessOrPublished: Access = ({
     }
 
     if (user.role === "user" && sites.length > 0) {
+      // Ограничение доступа должно быть выполненно единообразно
+      // т.е если использовать or:[] то его нужно использовать во всех return
       return {
         or: [
           {
@@ -32,19 +29,40 @@ const isAdminOrHasSiteAccessOrPublished: Access = ({
               in: sitesID,
             },
           },
-          {
-            site: {
-              exists: false,
-            },
-          },
         ],
       };
+
+      // Ограничение доступа должно быть выполненно единообразно
+      // Если использовать доступ по отдельным свойствам то тогда
+      // все свойства должны быть одинаковыми во всех return
+
+      // return {
+      //   site: {
+      //     in: sitesID,
+      //   },
+
+      //   _status: {
+      //     in: ["draft", "published"],
+      //   },
+      // };
     }
   }
 
-  return false;
+  return {
+    or: [
+      {
+        _status: {
+          equals: "published",
+        },
+      },
+    ],
+  };
 
   // return {
+  //   site: {
+  //     not_equals: "",
+  //   },
+
   //   _status: {
   //     equals: "published",
   //   },
@@ -87,8 +105,10 @@ export const Pages: CollectionConfig = {
       relationTo: "sites",
       required: true,
       defaultValue: ({ user }: { user: any }) => {
-        if (user.roles !== "admin" && user.sites?.[0]) {
-          return user.sites[0];
+        console.log("user:", user.roles);
+
+        if (user.role !== "admin" && user.sites?.[0]) {
+          return user.sites[1];
         }
       },
     },
