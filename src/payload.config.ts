@@ -9,6 +9,7 @@ import { Products } from "./collections/Products/Products";
 import { Sites } from "./collections/Sites";
 import { Pages } from "./collections/Pages";
 import { Media } from "./collections/Media";
+import { ProductFiles } from "./collections/ProductFile";
 
 // https://github.com/payloadcms/payload/blob/main/examples/custom-server/src/payload.config.ts
 
@@ -18,7 +19,7 @@ dotenv.config({
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || "",
-  collections: [Users, Products, Sites, Media, Pages],
+  collections: [Users, Products, Sites, Media, Pages, ProductFiles],
   routes: {
     admin: "/sell",
   },
