@@ -2,18 +2,18 @@ import { User } from "@/payload-types";
 import { Access, CollectionConfig, PayloadRequest } from "payload/types";
 
 const isAdminOrHasAccessToImages = (): Access => {
-  return  ({ req }) => {
-    console.log("222222222222222222222222");
-    
+  return async ({ req }) => {
+    // console.log("222222222222222222222222");
+
     const user = req.user as User | undefined;
 
     if (!user) {
       return false;
     }
 
-    // if (user.role === "admin") {
-    //   return true;
-    // }
+    if (user.role === "admin") {
+      return true;
+    }
 
     return {
       user: {
@@ -22,8 +22,6 @@ const isAdminOrHasAccessToImages = (): Access => {
     };
   };
 };
-
-
 
 export const Media: CollectionConfig = {
   slug: "media",
@@ -41,8 +39,8 @@ export const Media: CollectionConfig = {
     hidden: ({ user }) => user.role !== "admin",
   },
   access: {
-    read:  ({ req }) => {
-      const user = req.user as User | undefined;;
+    read: async ({ req }) => {
+      const user = req.user as User | undefined;
       const referer = req.headers.referer;
 
       const isClientSide = !referer?.includes("sell");
@@ -52,26 +50,17 @@ export const Media: CollectionConfig = {
         return true;
       }
 
-      if (!user) {
-        return false;
-      }
-  
-      // if (user.role === "admin") {
-      //   return true;
-      // }
-  
-      return {
-        user: {
-          equals: user.id,
-        },
-      };
-
-      // return  isAdminOrHasAccessToImages()({ req });
+      return await isAdminOrHasAccessToImages()({ req });
     },
+
+    update: isAdminOrHasAccessToImages(),
+    delete: isAdminOrHasAccessToImages(),
   },
   upload: {
     staticURL: "/media",
     staticDir: "media",
+    // disableLocalStorage: true,
+    // adminThumbnail:'', 
     imageSizes: [
       {
         name: "thumbnail",
