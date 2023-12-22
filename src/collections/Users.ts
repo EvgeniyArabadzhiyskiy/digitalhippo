@@ -2,7 +2,6 @@ import { User } from "@/payload-types";
 import { CollectionConfig, FieldAccess, Access } from "payload/types";
 
 export const adminsAndUser: Access<any, User> = ({ req: { user } }) => {
-  // console.log("user:", user);
   if (user) {
     const isAdmin = user?.role === "admin";
 
@@ -10,14 +9,11 @@ export const adminsAndUser: Access<any, User> = ({ req: { user } }) => {
       return true;
     }
 
-    const resultObject = {
+    return {
       id: {
         equals: user.id,
       },
     };
-    // console.log("resultObject============", resultObject);
-
-    return resultObject;
   }
 
   return false;
