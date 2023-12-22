@@ -5,9 +5,9 @@ export const isAdminOrHasSiteAccess = (
   siteIDFieldName: string = "site"
 ): Access => {
   return ({ req: { user } }) => {
-    const sitesID = user.sites.map(({ id }: { id: string }) => id);
-
+    
     if (user) {
+      const sitesID = user.sites.map(({ id }: { id: string }) => id);
       if (user.role === "admin") return true;
 
       if (user.role === "user" && user.sites?.length > 0) {
@@ -32,9 +32,7 @@ export const isAdminOrHasSiteAccess = (
           ],
         };
       }
-
-      return false;
-    }
+    };
 
     return false;
   };
