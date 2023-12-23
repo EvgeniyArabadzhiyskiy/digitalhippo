@@ -15,34 +15,15 @@ const isAdminCondition: Condition<any, any> = (
 
 const isMyProducts: Access<any, User> = async ({ req: { user } }) => {
   if (user) {
-    const isAdmin = user?.role === 'admin';
-
-    const { docs: products } = await payload.find({
-      collection: "products",
-      depth: 0,
-      where: {
-        user: {
-          equals: user.id,
-        },
-      },
-    });
-    
-    const ownProductFileIds = products
-    .map((prod) => prod.product_files)
-    .flat()
-    console.log("&&&&&&&&&&&&&&&&&ownProductFileIds:", ownProductFileIds);
-
-    if (isAdmin) {
+    if (user?.role === "admin") {
       return true;
     }
 
-    const resultObject = {
+    return {
       user: {
         equals: user.id,
       },
     };
-
-    return resultObject;
   }
 
   return false;
@@ -137,7 +118,7 @@ export const Products: CollectionConfig = {
       type: "relationship",
       relationTo: "product_files",
       required: true,
-      hasMany: true,
+      hasMany: false,
     },
 
     {
