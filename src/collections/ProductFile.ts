@@ -5,7 +5,7 @@ import { Access, CollectionConfig } from "payload/types";
 
 const addUser: BeforeChangeHook = ({ req, data }) => {
   const user = req.user as User | null;
-//   console.log("data==============", data);
+  //   console.log("data==============", data);
   return {
     ...data,
     user: user?.id,
@@ -15,7 +15,7 @@ const addUser: BeforeChangeHook = ({ req, data }) => {
 const yourOwnOrPurchased: Access = async ({ req }) => {
   const user = req.user as User | null;
 
-  if (user?.role === "admin") return true;
+  // if (user?.role === "admin") return true;
   if (!user) return false;
 
   const { docs: products } = await payload.find({
@@ -27,9 +27,39 @@ const yourOwnOrPurchased: Access = async ({ req }) => {
       },
     },
   });
-  console.log("********* products:", products);
+  // console.log("********* products:", products);
 
-  return false;
+  const ownProductFileIds = products.map((prod) => prod.product_files);
+
+  const { docs: orders } = await payload.find({
+    collection: "orders",
+    depth: 2,
+    where: {
+      user: {
+        equals: user.id,
+      },
+    },
+  });
+  // console.log("==============  orders:", orders);
+
+  const purchasedProductFileIds = orders
+    .map((order) => {
+      return order.products.map((product) => {
+        if (typeof product === "string") {
+          return req.payload.logger.error(
+            "Search depth not sufficient to find purchased file IDs"
+          );
+        }
+
+        return typeof product.product_files === "string"
+          ? product.product_files
+          : product.product_files.id;
+      });
+    })
+    .filter(Boolean)
+    .flat();
+
+  return true;
 };
 
 export const ProductFiles: CollectionConfig = {
@@ -48,6 +78,11 @@ export const ProductFiles: CollectionConfig = {
   access: {
     read: yourOwnOrPurchased,
     create: () => true,
+    // read: () => {
+    //   console.log("-------------------");
+
+    //   return true
+    // },
   },
   fields: [
     {
@@ -60,9 +95,9 @@ export const ProductFiles: CollectionConfig = {
         condition: () => false,
       },
     },
-    {
-      name: "name",
-      type: "text",
-    },
+    // {
+    //   name: "name",
+    //   type: "text",
+    // },
   ],
 };
