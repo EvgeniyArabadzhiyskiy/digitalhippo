@@ -51,29 +51,16 @@ export const Users: CollectionConfig = {
 
     update: adminsAndUser, // isAdmin
     delete: isAdmin,
-
-    // delete: ({ req }) => req.user.role === "admin",
   },
   fields: [
     {
       name: "role",
       defaultValue: "user",
       required: true,
-      // admin: {
-      //   condition: (data, sec, {user}: {user: Partial<User>}) => {
-      //     const isAdmin = user.role === "admin";
-      //     return false
-      //   },
-      // },
-
       access: {
-        // create: ({ req }: {req: PayloadRequest<User>}) => {
-        //   const user = req.user?.role
-        //   return true;
-        // },
-        // create: isAdminFieldLevel,
-        update: isAdminFieldLevel,
         read: () => true,
+        create: isAdminFieldLevel,
+        update: isAdminFieldLevel,
       },
       type: "select",
       options: [
@@ -83,22 +70,15 @@ export const Users: CollectionConfig = {
       ],
     },
 
-    {
-      name: "sites",
-      type: "relationship",
-      relationTo: "sites",
-      hasMany: true,
-      access: {
-        create: isAdminFieldLevel,
-        update: isAdminFieldLevel,
-      },
-      // admin: {
-      //   condition: (args) => {
-      //       const ssr = args
-      //       // console.log("ssr:", ssr);
-      //     return true
-      //   }
-      // }
-    },
+    // {
+    //   name: "sites",
+    //   type: "relationship",
+    //   relationTo: "sites",
+    //   hasMany: true,
+    //   access: {
+    //     create: isAdminFieldLevel,
+    //     update: isAdminFieldLevel,
+    //   },
+    // },
   ],
 };
