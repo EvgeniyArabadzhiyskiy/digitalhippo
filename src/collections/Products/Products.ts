@@ -60,17 +60,9 @@ export const Products: CollectionConfig = {
       relationTo: "users",
       type: "relationship",
       required: true,
-      // defaultValue: ({ user }: { user: User }) => {
-      //   return user.id;
-      // },
-      hasMany: false, // один продукт не может быть создан несколькими людьми
+      hasMany: false,
       admin: {
-        condition: () => false, // скрыть это поле из панели администратора
-        // condition: (data, siblingData, { user }: { user: Partial<User> }) => {
-        //   const isAdmin = user.role === "admin";
-
-        //   return isAdmin;
-        // },
+        condition: () => false,
       },
     },
 
@@ -173,25 +165,25 @@ export const Products: CollectionConfig = {
       },
     },
 
-    // {
-    //   name: "images",
-    //   label: "Product image",
-    //   type: "array",
-    //   minRows: 1,
-    //   maxRows: 4,
-    //   required: true,
-    //   labels: {
-    //     singular: "Image",
-    //     plural: "Images",
-    //   },
-    //   fields: [
-    //     {
-    //       name: "image",
-    //       type: "upload",
-    //       relationTo: "media",
-    //       required: true,
-    //     },
-    //   ],
-    // },
+    {
+      name: "images",
+      label: "Product image",
+      type: "array",
+      minRows: 1,
+      maxRows: 4,
+      required: true,
+      labels: {
+        singular: "Image",
+        plural: "Images",
+      },
+      fields: [
+        {
+          name: "image",
+          type: "upload",
+          relationTo: "media",
+          required: true,
+        },
+      ],
+    },
   ],
 };
