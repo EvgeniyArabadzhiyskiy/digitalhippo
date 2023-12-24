@@ -13,13 +13,13 @@ const isAdminOrHasSiteAccessOrPublished: Access = ({ req }) => {
 
   if (user) {
     const sites = req.user.sites as Site[];
-    const sitesID = sites.map(({ id }) => id);
+    const sitesID = sites?.map(({ id }) => id);
 
     if (user.role === "admin") {
       return true;
     }
 
-    if (user.role === "user" && sites.length > 0) {
+    if (user.role === "user" && sites?.length > 0) {
       // Ограничение доступа должно быть выполненно единообразно
       // т.е если использовать or:[] то его нужно использовать во всех return
       return {
