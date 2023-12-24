@@ -15,7 +15,7 @@ const addUser: BeforeChangeHook = ({ req, data }) => {
 const yourOwnOrPurchased: Access = async ({ req }) => {
   const user = req.user as User | null;
 
-  // if (user?.role === "admin") return true;
+  if (user?.role === "admin") return true;
   if (!user) return false;
 
   const { docs: products } = await payload.find({
@@ -30,6 +30,20 @@ const yourOwnOrPurchased: Access = async ({ req }) => {
   // console.log("********* products:", products);
 
   const ownProductFileIds = products.map((prod) => prod.product_files);
+  // console.log("ID=========:", ownProductFileIds);
+
+  //  Будут выбраны все product_files которые есть у user 
+  //  а не только которые есть в products данного user
+  const { docs: product_files } = await payload.find({
+    collection: "product_files",
+    depth: 0,
+    where: {
+      user: {
+        equals: user.id,
+      },
+    },
+  });
+  const ownProductFileIds1 = product_files.map((prod) => prod.id);  
 
   const { docs: orders } = await payload.find({
     collection: "orders",
@@ -59,7 +73,13 @@ const yourOwnOrPurchased: Access = async ({ req }) => {
     .filter(Boolean)
     .flat();
 
-  return true;
+  return {
+    id: {
+      in: [...ownProductFileIds, ...purchasedProductFileIds],
+    },
+  };
+
+  // return true;
 };
 
 export const ProductFiles: CollectionConfig = {
@@ -77,12 +97,8 @@ export const ProductFiles: CollectionConfig = {
   },
   access: {
     read: yourOwnOrPurchased,
-    create: () => true,
-    // read: () => {
-    //   console.log("-------------------");
-
-    //   return true
-    // },
+    update: ({ req }) => req.user.role === "admin",
+    delete: ({ req }) => req.user.role === "admin",
   },
   fields: [
     {
