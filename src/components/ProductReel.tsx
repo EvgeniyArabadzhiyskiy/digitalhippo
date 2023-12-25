@@ -1,15 +1,26 @@
 "use client";
 
+import { TQueryValidator } from "@/lib/validators/query-validator";
+import { trpc } from "@/trpc/client";
+import { query } from "express";
 import Link from "next/link";
 
 interface PropsProductReel {
   title: string;
   subtitle?: string;
   href?: string;
+  query: TQueryValidator;
 }
 
+const FALLACK_LIMIT = 4;
+
 const ProductReel = (props: PropsProductReel) => {
-  const { title, subtitle, href } = props;
+  const { title, subtitle, href, query } = props;
+
+  const {} = trpc.getInfinityProducts.useInfiniteQuery({
+    limit: query.limit ?? FALLACK_LIMIT,
+    query,
+  });
 
   return (
     <section className="py-12">
@@ -38,9 +49,7 @@ const ProductReel = (props: PropsProductReel) => {
 
       <div className="relative">
         <div className="mt-6 flex items-center w-full">
-          <div className="w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8">
-            
-          </div>
+          <div className="w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8"></div>
         </div>
       </div>
     </section>
