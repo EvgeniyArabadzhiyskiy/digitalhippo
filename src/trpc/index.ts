@@ -39,16 +39,17 @@ export const appRouter = router({
       const { cursor, query } = input;
       const { sort, limit, ...queryOpts } = query;
 
-      const page = cursor || 1;
-
+      
       const parsedQueryOpts: Record<string, { equals: string }> = {};
-
+      
       Object.entries(queryOpts).forEach(([key, value]) => {
         parsedQueryOpts[key] = {
           equals: value,
         };
       });
-
+      
+      const page = cursor || 1;
+      
       const payload = await getPayloadClient();
 
       const { docs: items, hasNextPage, nextPage } = await payload.find({
