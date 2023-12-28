@@ -51,7 +51,11 @@ export default function Home() {
           </div>
         </div>
 
-        <ProductReel href="/products" title="Brand new" />
+        <ProductReel
+          href="/products"
+          title="Brand new"
+          query={{ sort: "desc", limit: 1 }}
+        />
       </MaxWidthWrapper>
 
       <section className="border-t border-gray-200 bg-gray-50">
