@@ -59,7 +59,7 @@ const ProductReel = (props: PropsProductReel) => {
   } else if (isLoading) {
     map = new Array<null>(query.limit ?? FALLBACK_LIMIT).fill(null);
   }
-  console.log("ProductReel  map:", map);
+  // console.log("ProductReel  map:", map);
 
   return (
     <section className="py-12">
