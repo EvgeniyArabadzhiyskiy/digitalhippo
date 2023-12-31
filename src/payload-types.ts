@@ -23,7 +23,6 @@ export interface Config {
 export interface User {
   id: string;
   role: 'admin' | 'user';
-  sites?: (string | Site)[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -37,12 +36,6 @@ export interface User {
   lockUntil?: string | null;
   password: string | null;
 }
-export interface Site {
-  id: string;
-  title: string;
-  updatedAt: string;
-  createdAt: string;
-}
 export interface Product {
   id: string;
   user?: (string | null) | User;
@@ -54,6 +47,10 @@ export interface Product {
   approvedForSale?: ('pending' | 'approved' | 'denied') | null;
   priceId?: string | null;
   stripeId?: string | null;
+  images: {
+    image: string | Media;
+    id?: string | null;
+  }[];
   updatedAt: string;
   createdAt: string;
 }
@@ -106,6 +103,12 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+export interface Site {
+  id: string;
+  title: string;
+  updatedAt: string;
+  createdAt: string;
 }
 export interface Page {
   id: string;
