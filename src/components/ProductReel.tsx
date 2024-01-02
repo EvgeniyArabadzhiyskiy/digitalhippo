@@ -51,7 +51,7 @@ const ProductReel = (props: PropsProductReel) => {
 
   let map: (Product | null)[] = [];
   // let count = 0;
-  const count = useRef(0);
+  // const count = useRef(0);
   // console.log("ProductReel  count:", count.current);
 
   if (products && products.length) {
@@ -70,10 +70,12 @@ const ProductReel = (props: PropsProductReel) => {
               {title}
             </h1>
           ) : null}
-          <button onClick={() => hasNextPage && fetchNextPage()}>
+
+          {/* <button onClick={() => hasNextPage && fetchNextPage()}>
             Next Page
-          </button>{" "}
-          <button onClick={() => (count.current += 1)}>Count + 1</button>
+          </button> */}
+          {/* <button onClick={() => (count.current += 1)}>Count + 1</button> */}
+
           {subtitle ? (
             <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
           ) : null}
@@ -84,7 +86,7 @@ const ProductReel = (props: PropsProductReel) => {
             href={href}
             className="hidden md:block text-sm font-medium text-blue-600 hover:text-blue-500"
           >
-            Shop the colletion<span aria-hidden="true">&rarr;</span>
+            Shop the colletion <span aria-hidden="true">&rarr;</span>
           </Link>
         ) : null}
       </div>
