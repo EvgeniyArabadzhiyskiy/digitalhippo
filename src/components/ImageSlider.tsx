@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -65,7 +67,10 @@ const ImageSlider = ({ urls }: ImageSliderProps) => {
             [inactiveStyle]: slideConfig.isEnd,
             "hover:bg-blue-300 text-blue-800": !slideConfig.isEnd,
           })}
-          onClick={() => swiper?.slideNext(500)}
+          onClick={(e) => {
+            e.preventDefault();
+            swiper?.slideNext(500);
+          }}
           aria-label="next-image"
         >
           <ChevronRight className="h-4 w-4 text-zinc-700" />
