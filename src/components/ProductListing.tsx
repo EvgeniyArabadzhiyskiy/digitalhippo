@@ -8,7 +8,6 @@ import { cn, formatPrice } from "@/lib/utils";
 import { PRODUCT_CATEGORIES } from "@/config";
 import ImageSlider from "./ImageSlider";
 import { getValidUrls } from "@/lib/helpers/getValidUrls";
-import { trpc } from "@/trpc/client";
 
 interface ProductListingProps {
   product: Product | null;
@@ -32,24 +31,10 @@ const ProductListing = ({ product, index }: ProductListingProps) => {
   // console.log("ProductListing  index:", index);
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
-  // const {data} = trpc.anyApiRoutes.useQuery()
-  // console.log("ProductListing  data:", data);
-
-  // const {data: prods} = trpc.myNewRoute.useQuery('2')
-  // console.log("ProductListing  prods:", prods);
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, index * 75);
-
-    // (async () => {
-    //   const res = await fetch('https://jsonplaceholder.typicode.com/todos')
-  
-    //   const data = await res.json()
-    //   console.log("data:", data[0]);
-    //   return data;
-    // })()
 
     return () => {
       // console.log("UNMOuNT");
