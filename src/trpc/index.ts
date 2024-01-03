@@ -3,6 +3,7 @@ import { z } from "zod";
 import { authRouter } from "./auth-router";
 import { QueryValidator } from "../lib/validators/query-validator";
 import { getPayloadClient } from "../get-payload";
+import { Product } from "@/payload-types";
 
 interface User {
   name: string;
@@ -17,13 +18,26 @@ const djonAdmin = {
 };
 
 export const appRouter = router({
-  anyApiRoutes: publicProcedure.query(() => {
-    return djonAdmin;
+  anyApiRoutes: publicProcedure.query(async () => {
+    const res = await fetch('https://jsonplaceholder.typicode.com/todos')
+
+    const data = await res.json() as Product[]
+    return data[0];
   }),
 
-  myNewRoute: publicProcedure.input(z.string()).query((opts) => {
+  myNewRoute: publicProcedure.input(z.string()).query( async(opts) => {
     const { input } = opts;
-    return input;
+
+    const payload = await getPayloadClient();
+
+      const { docs: items } = await payload.find({
+        collection: "products",
+        depth: 0,
+      });
+
+      return items;
+      
+    
   }),
 
   auth: authRouter,
