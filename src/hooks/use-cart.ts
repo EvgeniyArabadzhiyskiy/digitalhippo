@@ -1,6 +1,49 @@
 import { Product } from "@/payload-types";
-import { create } from "zustand";
+// import { create } from "zustand";
 import { persist, createJSONStorage, combine } from "zustand/middleware";
+import { useMemo, useRef } from "react";
+import { create, type StoreApi, type UseBoundStore } from "zustand";
+
+
+
+const isClient = () => {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  return true;
+};
+// console.log( isClient());
+
+export const useStoreSync = <T>(
+  useStore: UseBoundStore<StoreApi<T>>,
+  state: T
+): UseBoundStore<StoreApi<T>> => {
+  // Ref to store flag and avoid rerender.
+  const unsynced = useRef(true);
+  // Creating store hook with initial state from the server.
+  const useServerStore = useMemo(() => create<T>(() => state), []);
+
+  if (unsynced.current) {
+    // Setting state and changing flag.
+    useStore.setState(state);
+    unsynced.current = false;
+  }
+  // For "client" we'll return the original store.
+  // For "server" we'll return the newly created one.
+  return isClient() ? useStore : useServerStore;
+};
+
+export type CountState = {
+  count: number;
+  increment: () => void;
+};
+
+export const useCountStore = create<CountState>()((set) => ({
+  count: 0,
+  increment: () => set((prev) => ({count: prev.count + 1})),
+}));
+
+
 
 export type CartItem = {
   product: Product;
@@ -69,20 +112,11 @@ export const useBearStore = create(
     {
       name: "bearStore",
       storage: createJSONStorage(() => localStorage),
-    //   partialize: (state) => ({ bears: state.bears }),
+      //   partialize: (state) => ({ bears: state.bears }),
     }
   )
 );
 
-// const useBearStore = create<BearState>()(
-//     devtools(
-//       persist(
-//         (set) => ({
-//           bears: 0,
-//           increase: (by) => set((state) => ({ bears: state.bears + by })),
-//         }),
 
-//         { name: 'bearStore' },
-//       ),
-//     ),
-//   )
+
+
