@@ -14,10 +14,20 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
+import { useCart } from "@/hooks/use-cart";
+import { ScrollArea } from "./ui/scroll-area";
+import CartItem from "./CartItem";
 
 const Cart = () => {
-  const itemCount = 0;
+  const { items } = useCart();
+  console.log("Cart  items:", items);
+  const itemCount = items.length;
   const fee = 1;
+
+  const cartTotal = items.reduce((total, item) => {
+    return total + item.product.price;
+  }, 0);
+
   return (
     <Sheet>
       <SheetTrigger
@@ -36,7 +46,13 @@ const Cart = () => {
 
         {itemCount > 0 ? (
           <>
-            <div className="flex flex-col w-full pr-6">cart item</div>
+            <div className="flex flex-col w-full pr-6">
+              <ScrollArea>
+                {items.map(({ product }) => {
+                  return <CartItem key={product.id} product={product} />;
+                })}
+              </ScrollArea>
+            </div>
             <div className="space-y-4 pr-6">
               <Separator />
               <div className="space-y-1.5 text-sm">
@@ -52,7 +68,7 @@ const Cart = () => {
 
                 <div className="flex">
                   <span className="flex-1">Total</span>
-                  <span>{formatPrice(fee)}</span>
+                  <span>{formatPrice(cartTotal + fee)}</span>
                 </div>
               </div>
 
