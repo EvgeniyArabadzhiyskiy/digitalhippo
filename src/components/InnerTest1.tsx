@@ -1,8 +1,7 @@
 "use client";
 
-import { useCountStore } from "@/hooks/use-cart";
 import { trpc } from "@/trpc/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 const getProducts = async () => {
   const res = await fetch("http://localhost:3000/api/products", {
@@ -21,13 +20,6 @@ const getProducts = async () => {
 const InnerTest1 = () => {
   const queryClient = useQueryClient();
 
-  const { count, increment } = useCountStore();
-  console.log("InnerTest1  count:", count);
-
-  // const sub = useFetchStore.subscribe(() => {
-  //   console.log("Subscribe");
-  // })
-
   const { data } = trpc.getProducts.useQuery(undefined, {
     staleTime: Infinity,
     // queryKey: ["getProducts", undefined]  // Можно без ключа
@@ -40,11 +32,8 @@ const InnerTest1 = () => {
     <>
       <h1 className="text-5xl">
         {data && data[0].name}
-        {count}
         Hello
       </h1>
-
-      <button onClick={increment}>INCREMENT COUNT</button>
     </>
   );
 };
