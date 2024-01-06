@@ -1,49 +1,6 @@
 import { Product } from "@/payload-types";
-// import { create } from "zustand";
+import { create } from "zustand";
 import { persist, createJSONStorage, combine } from "zustand/middleware";
-import { useMemo, useRef } from "react";
-import { create, type StoreApi, type UseBoundStore } from "zustand";
-
-
-
-const isClient = () => {
-  if (typeof window === "undefined") {
-    return false;
-  }
-  return true;
-};
-// console.log( isClient());
-
-export const useStoreSync = <T>(
-  useStore: UseBoundStore<StoreApi<T>>,
-  state: T
-): UseBoundStore<StoreApi<T>> => {
-  // Ref to store flag and avoid rerender.
-  const unsynced = useRef(true);
-  // Creating store hook with initial state from the server.
-  const useServerStore = useMemo(() => create<T>(() => state), []);
-
-  if (unsynced.current) {
-    // Setting state and changing flag.
-    useStore.setState(state);
-    unsynced.current = false;
-  }
-  // For "client" we'll return the original store.
-  // For "server" we'll return the newly created one.
-  return isClient() ? useStore : useServerStore;
-};
-
-export type CountState = {
-  count: number;
-  increment: () => void;
-};
-
-export const useCountStore = create<CountState>()((set) => ({
-  count: 0,
-  increment: () => set((prev) => ({count: prev.count + 1})),
-}));
-
-
 
 export type CartItem = {
   product: Product;
@@ -51,12 +8,38 @@ export type CartItem = {
 
 type CartState = {
   items: CartItem[];
-  addItem: (product: Product) => void;
+  addItem: (newProduct: Product) => void;
   removeItem: (productId: string) => void;
   clearCart: () => void;
 };
 
-// export const useCart = create<CartState>();
+export const useCart = create<CartState>()(
+  persist(
+    (set) => ({
+      items: [],
+
+      addItem: (newProduct) =>
+        set((state) => {
+          return {
+            items: [...state.items, { product: newProduct }],
+          };
+        }),
+
+      removeItem: (productId) =>
+        set((state) => {
+          return {
+            items: state.items.filter((item) => item.product.id !== productId),
+          };
+        }),
+
+      clearCart: () => set({ items: [] }),
+    }),
+    {
+      name: "cart-storage",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
 
 type BearsAndTigersStore = {
   bears: number;
@@ -116,7 +99,3 @@ export const useBearStore = create(
     }
   )
 );
-
-
-
-
