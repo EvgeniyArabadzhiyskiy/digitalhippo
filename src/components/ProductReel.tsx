@@ -19,10 +19,6 @@ const FALLBACK_LIMIT = 4;
 const ProductReel = (props: PropsProductReel) => {
   const { title, subtitle, href, query } = props;
 
-  // const [products, setProducts] = useState<(Product | null)[]>(
-  //   new Array<null>(query.limit ?? FALLBACK_LIMIT).fill(null)
-  // );
-
   const {
     data: queryResults,
     isLoading,
@@ -35,15 +31,10 @@ const ProductReel = (props: PropsProductReel) => {
     },
     {
       getNextPageParam: (lastPage) => {
-        // console.log("ProductReel  lastPage:", lastPage.nextPage);
         return lastPage.nextPage;
       },
       staleTime: Infinity,
       refetchOnWindowFocus: false,
-      // onSuccess: (data) => {
-      //   const result = data?.pages.flatMap((page) => page.items);
-      //   setProducts(result);
-      // },
     }
   );
 
@@ -59,14 +50,12 @@ const ProductReel = (props: PropsProductReel) => {
   } else if (isLoading) {
     map = new Array<null>(query.limit ?? FALLBACK_LIMIT).fill(null);
   }
-  // console.log("ProductReel  map:", map);
 
   return (
     <section className="py-12">
       <div className="md:flex md:item-center md:justify-between mb-4">
         <div className="max-w-2xl px-4 lg:max-w-4xl lg:px-0">
-
-        <Link href={"/test-1"}>Go Test</Link>
+          {/* <Link href={"/test-1"}>Go Test</Link> */}
 
           {title ? (
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
