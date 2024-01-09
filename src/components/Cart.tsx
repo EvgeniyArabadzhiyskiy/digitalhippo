@@ -17,12 +17,18 @@ import {
 import { useCart } from "@/hooks/use-cart";
 import { ScrollArea } from "./ui/scroll-area";
 import CartItem from "./CartItem";
+import { useEffect } from "react";
+import { useCustomStore } from "@/hooks/use-store";
 
 const Cart = () => {
   const { items } = useCart();
   console.log("Cart  items:", items);
   const itemCount = items.length;
   const fee = 1;
+  
+  useEffect(() => {
+    useCart.persist.rehydrate();
+  }, [])
 
   const cartTotal = items.reduce((total, item) => {
     return total + item.product.price;
