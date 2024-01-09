@@ -6,7 +6,7 @@ export type CartItem = {
   product: Product;
 };
 
-type CartState = {
+export type CartState = {
   items: CartItem[];
   addItem: (newProduct: Product) => void;
   removeItem: (productId: string) => void;
@@ -31,12 +31,12 @@ export const useCart = create<CartState>()(
             items: state.items.filter((item) => item.product.id !== productId),
           };
         }),
-
       clearCart: () => set({ items: [] }),
     }),
     {
       name: "cart-storage",
       storage: createJSONStorage(() => localStorage),
+      skipHydration: true,
     }
   )
 );
@@ -58,23 +58,23 @@ type BearsAndTigersStore = {
 //   removeAllBears: () => set({ bears: 0 }),
 // }));
 
-// type BearsStore = {
-//   bears: number;
-//   addABear: () => void;
-// };
+type BearsStore = {
+  bears: number;
+  addBear: () => void;
+};
 
-// export const useBearStor = create<BearsStore>()(
-//     persist(
-//       (set) => ({
-//         bears: 0,
-//         addABear: () => set({ bears: 0 }),
-//       }),
-//       {
-//         name: 'food-storage',
-//         storage: createJSONStorage(() => localStorage),
-//       },
-//     ),
-//   )
+export const useBearStor = create<BearsStore>()(
+  persist(
+    (set) => ({
+      bears: 0,
+      addBear: () => set((state) => ({ bears: state.bears + 1 })),
+    }),
+    {
+      name: "food-storage",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
 
 export const useBearStore = create(
   persist(
