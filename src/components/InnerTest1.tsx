@@ -1,7 +1,10 @@
 "use client";
 
+import { useBearStor } from "@/hooks/use-cart";
+import { useCustomStore } from "@/hooks/use-store";
 import { trpc } from "@/trpc/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { PropsWithChildren, useEffect } from "react";
 
 const getProducts = async () => {
   const res = await fetch("http://localhost:3000/api/products", {
@@ -17,7 +20,16 @@ const getProducts = async () => {
   return items;
 };
 
-const InnerTest1 = () => {
+const InnerTest1 = ({ children }: PropsWithChildren) => {
+  const bears = useCustomStore(useBearStor, (s) => s.bears) || 0;
+  const addBear = useBearStor((s) => s.addBear);
+
+  //  Вместе со skipHydration: true;
+  // const {addBear, bears} = useBearStor();
+  // useEffect(() => {
+  //   useBearStor.persist.rehydrate();
+  // }, [])
+
   const queryClient = useQueryClient();
 
   const { data } = trpc.getProducts.useQuery(undefined, {
@@ -32,8 +44,11 @@ const InnerTest1 = () => {
     <>
       <h1 className="text-5xl">
         {data && data[0].name}
-        Hello
+        Hello {bears}
       </h1>
+
+      <button onClick={addBear}>Bears</button>
+      {children}
     </>
   );
 };
