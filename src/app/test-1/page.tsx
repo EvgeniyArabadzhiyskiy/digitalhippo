@@ -1,4 +1,5 @@
 import InnerTest1 from "@/components/InnerTest1";
+import ServerComponent from "@/components/ServerComponent";
 import { getPayloadClient } from "@/get-payload";
 import getQueryClient from "@/lib/helpers/getQueryClient";
 import { Hydrate, dehydrate } from "@tanstack/react-query";
@@ -14,19 +15,22 @@ const getProducts = async () => {
   return items;
 };
 
-
-
 const Test1 = async () => {
   const queryClient = getQueryClient();
 
-  await queryClient.prefetchQuery([["getProducts"], { type: "query" }], getProducts);
+  await queryClient.prefetchQuery(
+    [["getProducts"], { type: "query" }],
+    getProducts
+  );
 
   const dehydratedState = dehydrate(queryClient);
 
   return (
     <>
       <Hydrate state={dehydratedState}>
-        <InnerTest1 />
+        <InnerTest1>
+          <ServerComponent />
+        </InnerTest1>
       </Hydrate>
     </>
   );
