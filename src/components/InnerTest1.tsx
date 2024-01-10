@@ -21,7 +21,7 @@ const getProducts = async () => {
 };
 
 const InnerTest1 = ({ children }: PropsWithChildren) => {
-  const bears = useCustomStore(useBearStor, (s) => s.bears) || 0;
+  const bears = useCustomStore(useBearStor, (s) => s.bears) || 0;  // need default value instead undefine
   const addBear = useBearStor((s) => s.addBear);
 
   //  Вместе со skipHydration: true;
