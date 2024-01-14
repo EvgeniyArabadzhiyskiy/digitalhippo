@@ -1,7 +1,9 @@
 "use client";
 import { useCart } from "@/hooks/use-cart";
+import { getProductLabel } from "@/lib/helpers/getProductLabel";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
 
 const PageCart = () => {
   const { items, removeItem } = useCart();
@@ -41,7 +43,48 @@ const PageCart = () => {
               </div>
             ) : null}
 
-            
+            <ul
+              className={cn({
+                "divide-y divide-gray-200 border-b border-t border-gray-200":
+                  items.length > 0,
+              })}
+            >
+              {items.map(({ product }) => {
+                const label = getProductLabel(product);
+                const { image } = product.images[0];
+
+                return (
+                  <li key={product.id} className="flex py-6 sm:py-10">
+                    <div className="flex-shrink-0">
+                      <div className="relative h-24 w-24">
+                        {typeof image !== "string" && image.url ? (
+                          <Image
+                            src={image.url}
+                            fill
+                            alt="product image"
+                            className="h-full w-full rounded-md object-cover object-center sm:h-48 sm:w-48"
+                          />
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-10">
+                      <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
+                        <div>
+                          <div className="flex justify-between">
+                            <h3 className="text-sm">
+                              <Link href={`/product/${product.id}`}>
+                                {product.name}
+                              </Link>
+                            </h3>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
       </div>
