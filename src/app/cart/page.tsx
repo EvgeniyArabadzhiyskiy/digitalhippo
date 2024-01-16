@@ -1,12 +1,23 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
+import { getCartTotal } from "@/lib/helpers/getCartTotal";
 import { getProductLabel } from "@/lib/helpers/getProductLabel";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
+import { trpc } from "@/trpc/client";
+import { Check, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 const PageCart = () => {
   const { items, removeItem } = useCart();
+
+  const fee = 1;
+  const cartTotal = getCartTotal(items);
+
+  const {data} = trpc.payment.createSession.useQuery()
+  console.log("PageCart  data:", data);
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -73,19 +84,87 @@ const PageCart = () => {
                         <div>
                           <div className="flex justify-between">
                             <h3 className="text-sm">
-                              <Link href={`/product/${product.id}`}>
+                              <Link
+                                href={`/product/${product.id}`}
+                                className="font-medium text-gray-700 hover:text-gray-900"
+                              >
                                 {product.name}
                               </Link>
                             </h3>
                           </div>
+
+                          <div className="mt-1 flex text-sm">
+                            <p className="text-muted-foreground">
+                              Category: {label}
+                            </p>
+                          </div>
+
+                          <p className="mt-1 text-sm font-medium text-gray-900">
+                            {formatPrice(product.price)}
+                          </p>
+                        </div>
+
+                        <div className="mt-4 sm:mt-0 sm:pr-9 w-20">
+                          <div className="absolute right-0 top-0">
+                            <Button
+                              aria-label="remove button"
+                              onClick={() => removeItem(product.id)}
+                              variant="ghost"
+                            >
+                              <X className="h-5 w-5" aria-hidden="true" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
+
+                      <p className="mt-4 flex space-x-2 text-sm text-gray-700">
+                        <Check className="h-5 w-5 flex-shrink-0 text-green-500" />
+                        <span>Eligible for instant delivery</span>
+                      </p>
                     </div>
                   </li>
                 );
               })}
             </ul>
           </div>
+
+          <section className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
+            <h2 className="text-lg font-medium text-gray-900">Order summary</h2>
+
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-600">Subtotal</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {formatPrice(cartTotal)}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <span>Flat Transaction Fee</span>
+                </div>
+
+                <div className="text-sm font-medium text-gray-900">
+                  {formatPrice(fee)}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+                <div className="text-base font-medium text-gray-900">
+                  Order Total
+                </div>
+                <div className="text-base font-medium text-gray-900">
+                  {formatPrice(cartTotal + fee)}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <Button className="w-full" size="lg">
+                Checkout
+              </Button>
+            </div>
+          </section>
         </div>
       </div>
     </div>
