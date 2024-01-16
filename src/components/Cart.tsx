@@ -19,20 +19,23 @@ import { ScrollArea } from "./ui/scroll-area";
 import CartItem from "./CartItem";
 import { useEffect } from "react";
 import { useCustomStore } from "@/hooks/use-store";
+import { getCartTotal } from "@/lib/helpers/getCartTotal";
 
 const Cart = () => {
   const { items } = useCart();
   console.log("Cart  items:", items);
   const itemCount = items.length;
   const fee = 1;
-  
+
   useEffect(() => {
     useCart.persist.rehydrate();
-  }, [])
+  }, []);
 
-  const cartTotal = items.reduce((total, item) => {
-    return total + item.product.price;
-  }, 0);
+  // const cartTotal = items.reduce((total, item) => {
+  //   return total + item.product.price;
+  // }, 0);
+
+  const cartTotal = getCartTotal(items);
 
   return (
     <Sheet>
