@@ -11,12 +11,23 @@ import Link from "next/link";
 
 const PageCart = () => {
   const { items, removeItem } = useCart();
-
   const fee = 1;
   const cartTotal = getCartTotal(items);
 
-  const {data} = trpc.payment.createSession.useQuery()
-  console.log("PageCart  data:", data);
+  const productIds = items.map((prod) => prod.product.id);
+  // console.log("PageCart  productIds:", productIds);
+
+  const { mutate: createProductSession } =
+    trpc.payment.createSession.useMutation();
+
+    const filteredProducts = items.map((prod) => prod.product).filter((prod) => {
+      console.log("filteredProducts  prod:", prod);
+      return Boolean(prod.priceId)
+    })
+    console.log("filteredProducts  filteredProducts:", filteredProducts);
+
+  // const { data } = trpc.myNewRoute.useQuery("Djon")
+  // console.log("PageCart  data:", data);
 
   return (
     <div className="bg-white">
@@ -160,7 +171,11 @@ const PageCart = () => {
             </div>
 
             <div className="mt-6">
-              <Button className="w-full" size="lg">
+              <Button
+                className="w-full"
+                size="lg"
+                onClick={() => createProductSession({ productIds })}
+              >
                 Checkout
               </Button>
             </div>
