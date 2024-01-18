@@ -5,29 +5,25 @@ import { getCartTotal } from "@/lib/helpers/getCartTotal";
 import { getProductLabel } from "@/lib/helpers/getProductLabel";
 import { cn, formatPrice } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
-import { Check, X } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const PageCart = () => {
+  const router = useRouter();
   const { items, removeItem } = useCart();
+
   const fee = 1;
   const cartTotal = getCartTotal(items);
+  const productIds = items.map(({ product }) => product.id);
 
-  const productIds = items.map((prod) => prod.product.id);
-  // console.log("PageCart  productIds:", productIds);
-
-  const { mutate: createProductSession } =
-    trpc.payment.createSession.useMutation();
-
-    const filteredProducts = items.map((prod) => prod.product).filter((prod) => {
-      console.log("filteredProducts  prod:", prod);
-      return Boolean(prod.priceId)
-    })
-    console.log("filteredProducts  filteredProducts:", filteredProducts);
-
-  // const { data } = trpc.myNewRoute.useQuery("Djon")
-  // console.log("PageCart  data:", data);
+  const { mutate: createCheckoutSession, isLoading } =
+    trpc.payment.createSession.useMutation({
+      onSuccess: ({ url }) => {
+        if (url) router.push(url);
+      },
+    });
 
   return (
     <div className="bg-white">
@@ -174,8 +170,12 @@ const PageCart = () => {
               <Button
                 className="w-full"
                 size="lg"
-                onClick={() => createProductSession({ productIds })}
+                disabled={items.length === 0 || isLoading}
+                onClick={() => createCheckoutSession({ productIds })}
               >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-1.5" />
+                ) : null}
                 Checkout
               </Button>
             </div>
