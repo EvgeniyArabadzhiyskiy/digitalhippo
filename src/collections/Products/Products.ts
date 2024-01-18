@@ -3,6 +3,8 @@ import { Product, User } from "@/payload-types";
 import { Access, CollectionConfig, Condition } from "payload/types";
 import { isAdmin, isAdminFieldLevel } from "../Users";
 import payload from "payload";
+import { BeforeChangeHook } from "payload/dist/collections/config/types";
+import { stripe } from "../../lib/stripe";
 
 const isAdminCondition: Condition<any, any> = (
   data,
@@ -11,6 +13,15 @@ const isAdminCondition: Condition<any, any> = (
 ) => {
   const isAdmin = user.role === "admin";
   return isAdmin;
+};
+
+const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
+  const user = req.user as User;
+
+  return {
+    ...data,
+    user: user.id,
+  };
 };
 
 const isMyProducts: Access<any, User> = async ({ req: { user } }) => {
@@ -33,13 +44,42 @@ export const Products: CollectionConfig = {
   slug: "products",
   hooks: {
     beforeChange: [
-      async ({ req, data }) => {
-        const user = req.user as User;
+      addUser,
+      async (args) => {
+        if (args.operation === "create") {
+          const data = args.data as Product;
 
-        return {
-          ...data,
-          user: user.id,
-        };
+          const createdProduct = await stripe.products.create({
+            name: data.name,
+            default_price_data: {
+              currency: "USD",
+              unit_amount: Math.round(data.price * 100),
+            },
+          });
+
+          const updated: Product = {
+            ...data,
+            stripeId: createdProduct.id,
+            priceId: createdProduct.default_price as string,
+          };
+
+          return updated;
+        } else if (args.operation === "update") {
+          const data = args.data as Product;
+
+          const updatedProduct = await stripe.products.update(data.stripeId!, {
+            name: data.name,
+            default_price: data.priceId as string,
+          });
+
+          const updated: Product = {
+            ...data,
+            stripeId: updatedProduct.id,
+            priceId: updatedProduct.default_price as string,
+          };
+
+          return updated;
+        }
       },
     ],
   },
@@ -142,8 +182,8 @@ export const Products: CollectionConfig = {
     {
       name: "priceId",
       access: {
-        create: () => false,
         read: () => false,
+        create: () => false,
         update: () => false,
       },
       type: "text",
@@ -155,8 +195,8 @@ export const Products: CollectionConfig = {
     {
       name: "stripeId",
       access: {
-        create: () => false,
         read: () => false,
+        create: () => false,
         update: () => false,
       },
       type: "text",
