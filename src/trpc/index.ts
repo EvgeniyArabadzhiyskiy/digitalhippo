@@ -3,7 +3,8 @@ import { z } from "zod";
 import { authRouter } from "./auth-router";
 import { QueryValidator } from "../lib/validators/query-validator";
 import { getPayloadClient } from "../get-payload";
-import { Product } from "@/payload-types";
+import { paymentRouter } from "./payment-router";
+import { PayloadRequest } from "payload/types";
 
 interface User {
   name: string;
@@ -18,29 +19,31 @@ const djonAdmin = {
 };
 
 export const appRouter = router({
-  anyApiRoutes: publicProcedure.query(async () => {
-    const res = await fetch('https://jsonplaceholder.typicode.com/todos')
-
-    const data = await res.json() as Product[]
-    return data[0];
-  }),
-
-  myNewRoute: publicProcedure.input(z.string()).query( async(opts) => {
-    const { input } = opts;
-
+  getProducts: publicProcedure.query(async () => {
     const payload = await getPayloadClient();
 
-      const { docs: items } = await payload.find({
-        collection: "products",
-        depth: 0,
-      });
+    const { docs: items } = await payload.find({
+      collection: "products",
+      depth: 0,
+    });
+    // console.log("getProducts  items:", items);
 
-      return items;
-      
+    return items;
+  }),
+
+  myNewRoute: publicProcedure.input(z.string()).query((opts) => {
+    const { input, ctx } = opts;
+    const req = ctx.req as PayloadRequest;
+
+    const { user } = req as { user: User | null };
+    console.log("User:===============", user);
     
+    return "user";
   }),
 
   auth: authRouter,
+  payment: paymentRouter,
+
   getInfinityProducts: publicProcedure
     .input(
       z.object({
@@ -53,20 +56,23 @@ export const appRouter = router({
       const { cursor, query } = input;
       const { sort, limit, ...queryOpts } = query;
 
-      
       const parsedQueryOpts: Record<string, { equals: string }> = {};
-      
+
       Object.entries(queryOpts).forEach(([key, value]) => {
         parsedQueryOpts[key] = {
           equals: value,
         };
       });
-      
+
       const page = cursor || 1;
-      
+
       const payload = await getPayloadClient();
 
-      const { docs: items, hasNextPage, nextPage } = await payload.find({
+      const {
+        docs: items,
+        hasNextPage,
+        nextPage,
+      } = await payload.find({
         collection: "products",
         depth: 1,
         where: {
@@ -82,7 +88,7 @@ export const appRouter = router({
 
       return {
         items,
-        nextPage: hasNextPage ? nextPage : null
+        nextPage: hasNextPage ? nextPage : null,
       };
     }),
 });
