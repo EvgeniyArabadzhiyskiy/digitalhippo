@@ -1,9 +1,10 @@
 import InnerTest1 from "@/components/InnerTest1";
+import PaymentStatus from "@/components/PaymentStatus";
 import { getPayloadClient } from "@/get-payload";
 import { getProductLabel } from "@/lib/helpers/getProductLabel";
 import { getServerSideUser } from "@/lib/payload-utils";
 import { formatPrice } from "@/lib/utils";
-import { Media, Product, ProductFile } from "@/payload-types";
+import { Media, Product, ProductFile, User } from "@/payload-types";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,9 +46,12 @@ const ThankYouPage = async ({ searchParams }: PageProps) => {
     return redirect(`/sign-in?origin=thank-you&orderId=${orderId}`);
   }
 
-  const products = order.products as Product[];
+  const orderProducts = order.products as Product[];
 
-  const orderTotal = products.reduce((acc, product) => acc + product.price, 0);
+  const orderTotal = orderProducts.reduce(
+    (acc, product) => acc + product.price,
+    0
+  );
 
   return (
     <main className="relative lg:min-h-full">
@@ -91,7 +95,7 @@ const ThankYouPage = async ({ searchParams }: PageProps) => {
               <div className="text-muted-foreground">Order nr.</div>
               <div className="mt-2 text-gray-900">{order.id}</div>
               <ul className="mt-6 divide-y divide-gray-200 border-t border-gray-200 text-sm font-medium text-muted-foreground">
-                {(order.products as Product[]).map((product) => {
+                {orderProducts.map((product) => {
                   const label = getProductLabel(product);
 
                   const downloadUrl = (product.product_files as ProductFile)
@@ -154,6 +158,12 @@ const ThankYouPage = async ({ searchParams }: PageProps) => {
                   <p className="text-base">{formatPrice(orderTotal + 1)}</p>
                 </div>
               </div>
+
+              <PaymentStatus
+                orderEmail={(order.user as User).email}
+                orderId={order.id}
+                isPaid={order._isPaid}
+              />
 
               <div className="mt-16 border-t border-gray-200 py-6 text-right">
                 <Link
