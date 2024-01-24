@@ -46,7 +46,6 @@ export const Media: CollectionConfig = {
       const isClientSide = !referer?.includes("sell");
 
       if (!user || isClientSide) {
-        console.log("ClientSide==============", isClientSide);
         return true;
       }
 
