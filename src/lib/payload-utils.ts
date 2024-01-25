@@ -11,15 +11,17 @@ export const getServerSideUser = async (
     `${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/me`,
     {
       headers: {
-        Authorization: `JWT ${payloadToken}`,
+        Authorization: `Bearer ${payloadToken}`,
       },
     }
   );
 
-  const { user, token } = (await meRes.json()) as {
-    user: User | null;
-    token: string | undefined;
-  };
+  const { user, token } = await meRes.json()
+
+  // const { user, token } = (await meRes.json()) as {
+  //   user: User | null;
+  //   token: string | undefined;
+  // };
 
   return { user, token };
 };
