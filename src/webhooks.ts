@@ -83,6 +83,7 @@ export const stripeWebhookHandler = async (
     });
 
     // send receipt
+    // coment
     try {
       const data = await resend.emails.send({
         from: "DigitalHippo <hello@joshtriedcoding.com>",
