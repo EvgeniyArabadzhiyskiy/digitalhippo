@@ -1,14 +1,15 @@
+import path from "path";
 import express from "express";
+import bodyParser from "body-parser";
+import nextBuild from "next/dist/build";
+import { IncomingMessage } from "http";
+import * as trpcExpress from "@trpc/server/adapters/express";
+
+import { appRouter } from "./trpc";
 import { getPayloadClient } from "./get-payload";
 import { nextApp, nextHandler } from "./next-utils";
-import * as trpcExpress from "@trpc/server/adapters/express";
-import { appRouter } from "./trpc";
 import { inferAsyncReturnType } from "@trpc/server";
-import bodyParser from "body-parser";
-import { IncomingMessage } from "http";
-// import { stripeWebhookHandler } from "./webhooks";
-import nextBuild from "next/dist/build";
-import path from "path";
+import { stripeWebhookHandler } from "./webhooks";
 
 // https://github.com/payloadcms/payload/blob/main/examples/custom-server/src/server.ts
 
@@ -29,13 +30,13 @@ export type ExpressContext = inferAsyncReturnType<typeof createContext>;
 export type WebhookRequest = IncomingMessage & { rawBody: Buffer };
 
 const start = async () => {
-  // const webhookMiddleware = bodyParser.json({
-  //   verify: (req: WebhookRequest, res, buffer) => {
-  //     req.rawBody = buffer;
-  //   },
-  // });
+  const webhookMiddleware = bodyParser.json({
+    verify: (req: WebhookRequest, res, buffer) => {
+      req.rawBody = buffer;
+    },
+  });
 
-  // app.post("/api/webhooks/stripe", webhookMiddleware, stripeWebhookHandler);
+  app.post("/api/webhooks/stripe", webhookMiddleware, stripeWebhookHandler);
 
   const payload = await getPayloadClient({
     initOptions: {
