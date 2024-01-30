@@ -52,7 +52,7 @@ export default function Home() {
         </div>
 
         <ProductReel
-          href="/products"
+          href='/products?sort=recent'
           title="Brand new"
           query={{ sort: "desc", limit: 4 }}
         />
