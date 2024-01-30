@@ -18,44 +18,44 @@ interface PageProps {
 }
 
 const ThankYouPage = async ({ searchParams }: PageProps) => {
-  // const orderId = searchParams.orderId;
-  // const nextCookies = cookies();
+  const orderId = searchParams.orderId;
+  const nextCookies = cookies();
 
-  // const { user } = await getServerSideUser(nextCookies);
+  const { user } = await getServerSideUser(nextCookies);
 
-  // const payload = await getPayloadClient();
+  const payload = await getPayloadClient();
 
-  // const { docs: orders } = await payload.find({
-  //   collection: "orders",
-  //   depth: 2,
-  //   where: {
-  //     id: {
-  //       equals: orderId,
-  //     },
-  //   },
-  // });
+  const { docs: orders } = await payload.find({
+    collection: "orders",
+    depth: 2,
+    where: {
+      id: {
+        equals: orderId,
+      },
+    },
+  });
 
-  // const [order] = orders;
+  const [order] = orders;
 
-  // if (!order) return notFound();
+  if (!order) return notFound();
 
-  // const orderUserId =
-  //   typeof order.user === "string" ? order.user : order.user.id;
+  const orderUserId =
+    typeof order.user === "string" ? order.user : order.user.id;
 
-  // if (orderUserId !== user?.id) {
-  //   return redirect(`/sign-in?origin=thank-you&orderId=${orderId}`);
-  // }
+  if (orderUserId !== user?.id) {
+    return redirect(`/sign-in?origin=thank-you&orderId=${orderId}`);
+  }
 
-  // const orderProducts = order.products as Product[];
+  const orderProducts = order.products as Product[];
 
-  // const orderTotal = orderProducts.reduce(
-  //   (acc, product) => acc + product.price,
-  //   0
-  // );
+  const orderTotal = orderProducts.reduce(
+    (acc, product) => acc + product.price,
+    0
+  );
 
   return (
     <>
-    {/* <main className="relative lg:min-h-full">
+    <main className="relative lg:min-h-full">
       <div className="hidden lg:block h-80 overflow-hidden lg:absolute lg:h-full lg:w-1/2 lg:pr-4 xl:pr-12">
         <Image
           fill
@@ -178,7 +178,7 @@ const ThankYouPage = async ({ searchParams }: PageProps) => {
           </div>
         </div>
       </div>
-    </main> */}
+    </main>
     </>
   );
 };
