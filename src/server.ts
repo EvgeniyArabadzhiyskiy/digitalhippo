@@ -10,6 +10,8 @@ import { getPayloadClient } from "./get-payload";
 import { nextApp, nextHandler } from "./next-utils";
 import { inferAsyncReturnType } from "@trpc/server";
 import { stripeWebhookHandler } from "./webhooks";
+import { PayloadRequest } from "payload/types";
+import { parse } from "url";
 
 // https://github.com/payloadcms/payload/blob/main/examples/custom-server/src/server.ts
 
@@ -46,6 +48,23 @@ const start = async () => {
       },
     },
   });
+
+  const cartRouter = express.Router();
+
+  cartRouter.use(payload.authenticate);
+  // cartRouter.use((req, res, next) => payload.authenticate(req, res, next));
+
+  cartRouter.get("/", (req, res) => {
+    const request = req as PayloadRequest;
+
+    if (!request.user) return res.redirect("/sign-in?origin=cart");
+
+    const parseUrl = parse(req.url, true);
+
+    return nextApp.render(req, res, "/cart", parseUrl.query);
+  });
+
+  app.use("/cart", cartRouter);
 
   if (process.env.NEXT_BUILD) {
     app.listen(PORT, async () => {
