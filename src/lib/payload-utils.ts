@@ -1,9 +1,9 @@
 import { User } from "@/payload-types";
 import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export const getServerSideUser = async (
-  cookies: NextResponse["cookies"] | ResponseCookies
+  cookies: NextRequest["cookies"] | ResponseCookies
 ) => {
   const payloadToken = cookies.get("payload-token")?.value || null;
 
