@@ -35,6 +35,8 @@ export const Users: CollectionConfig = {
   slug: "users",
   admin: {
     useAsTitle: "role",
+    // hidden: ({ user }) => user.role !== "admin",
+    defaultColumns: ["id"],
   },
 
   auth: {
@@ -47,12 +49,34 @@ export const Users: CollectionConfig = {
   },
   access: {
     read: adminsAndUser,
-    create: isAdmin, // create:() => true,
+    // create: isAdmin,
+    create: () => true,
 
     update: adminsAndUser, // isAdmin
     delete: isAdmin,
   },
   fields: [
+    {
+      name: "products",
+      label: "Products",
+      type: "relationship",
+      relationTo: "products",
+      admin: {
+        condition: () => false,
+      },
+      hasMany: true,
+    },
+    {
+      name: "product_files",
+      label: "Product files",
+      type: "relationship",
+      relationTo: "product_files",
+      admin: {
+        condition: () => false,
+      },
+      hasMany: true,
+    },
+
     {
       name: "role",
       defaultValue: "user",
