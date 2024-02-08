@@ -2,8 +2,10 @@ import { PRODUCT_CATEGORIES } from "../../config";
 import { Product, User } from "@/payload-types";
 import { Access, CollectionConfig, Condition } from "payload/types";
 import { isAdmin, isAdminFieldLevel } from "../Users";
-import payload from "payload";
-import { BeforeChangeHook } from "payload/dist/collections/config/types";
+import {
+  AfterChangeHook,
+  BeforeChangeHook,
+} from "payload/dist/collections/config/types";
 import { stripe } from "../../lib/stripe";
 
 const isAdminCondition: Condition<any, any> = (
@@ -40,9 +42,49 @@ const isMyProducts: Access<any, User> = async ({ req: { user } }) => {
   return false;
 };
 
+const syncUser: AfterChangeHook = async ({ req, doc }) => {
+  // console.log("DOC====", doc);
+  const fullUser = await req.payload.findByID({
+    collection: "users",
+    id: req.user.id,
+  });
+
+  if (fullUser && typeof fullUser === "object") {
+    const { products } = fullUser;
+
+    const allIds = [
+      ...(products?.map((product) =>
+        typeof product === "object" ? product.id : product
+      ) || []),
+    ];
+    console.log("allIds#######", allIds);
+
+    const createdProductIds = allIds.filter(
+      (id, index) => {
+        console.log("Index:", index);
+        console.log("indexOf(id):", allIds.indexOf(id));
+        return allIds.indexOf(id) === index
+      }
+    );
+    console.log("createdProductIds:::::::::::::::", createdProductIds);
+
+    const dataToUpdate = [...createdProductIds, doc.id]
+    // console.log("DataToUpdate:", dataToUpdate);
+
+    await req.payload.update({
+      collection: "users",
+      id: fullUser.id,
+      data: {
+        products: dataToUpdate
+      } 
+    })
+  }
+};
+
 export const Products: CollectionConfig = {
   slug: "products",
   hooks: {
+    afterChange: [syncUser],
     beforeChange: [
       addUser,
       async (args) => {
