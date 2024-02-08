@@ -1,5 +1,4 @@
 import { User } from "@/payload-types";
-import payload from "payload";
 import { BeforeChangeHook } from "payload/dist/collections/config/types";
 import { Access, CollectionConfig } from "payload/types";
 
@@ -18,7 +17,7 @@ const yourOwnOrPurchased: Access = async ({ req }) => {
   if (user?.role === "admin") return true;
   if (!user) return false;
 
-  const { docs: products } = await payload.find({
+  const { docs: products } = await req.payload.find({
     collection: "products",
     depth: 0,
     where: {
@@ -34,7 +33,7 @@ const yourOwnOrPurchased: Access = async ({ req }) => {
 
   //  Будут выбраны все product_files которые есть у user 
   //  а не только которые есть в products данного user
-  const { docs: product_files } = await payload.find({
+  const { docs: product_files } = await req.payload.find({
     collection: "product_files",
     depth: 0,
     where: {
@@ -45,7 +44,7 @@ const yourOwnOrPurchased: Access = async ({ req }) => {
   });
   const ownProductFileIds1 = product_files.map((prod) => prod.id);  
 
-  const { docs: orders } = await payload.find({
+  const { docs: orders } = await req.payload.find({
     collection: "orders",
     depth: 2,
     where: {
