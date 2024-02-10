@@ -17,18 +17,9 @@ const isAdminCondition: Condition<any, any> = (
   return isAdmin;
 };
 
-const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
-  const user = req.user as User;
-
-  return {
-    ...data,
-    user: user.id,
-  };
-};
-
 const isMyProducts: Access<any, User> = async ({ req: { user } }) => {
   if (user) {
-    if (user?.role === "admin") {
+    if (user.role === "admin") {
       return true;
     }
 
@@ -40,6 +31,32 @@ const isMyProducts: Access<any, User> = async ({ req: { user } }) => {
   }
 
   return false;
+};
+
+const isAdminOrHasAccess: Access<any, User> = ({ req: { user } }) => {
+  if (!user) return false;
+  if (user.role === "admin") return true;
+
+  const userProductIDs = (user.products || []).reduce<Array<string>>(
+    (acc, product) => {
+      if (!product) return acc;
+
+      if (typeof product === "string") {
+        acc.push(product);
+      } else {
+        acc.push(product.id);
+      }
+
+      return acc;
+    },
+    []
+  );
+
+  return {
+    id: {
+      in: userProductIDs,
+    },
+  };
 };
 
 const syncUser: AfterChangeHook = async ({ req, doc }) => {
@@ -59,26 +76,33 @@ const syncUser: AfterChangeHook = async ({ req, doc }) => {
     ];
     console.log("allIds#######", allIds);
 
-    const createdProductIds = allIds.filter(
-      (id, index) => {
-        console.log("Index:", index);
-        console.log("indexOf(id):", allIds.indexOf(id));
-        return allIds.indexOf(id) === index
-      }
-    );
+    const createdProductIds = allIds.filter((id, index) => {
+      console.log("Index:", index);
+      console.log("indexOf(id):", allIds.indexOf(id));
+      return allIds.indexOf(id) === index;
+    });
     console.log("createdProductIds:::::::::::::::", createdProductIds);
 
-    const dataToUpdate = [...createdProductIds, doc.id]
+    const dataToUpdate = [...createdProductIds, doc.id];
     // console.log("DataToUpdate:", dataToUpdate);
 
     await req.payload.update({
       collection: "users",
       id: fullUser.id,
       data: {
-        products: dataToUpdate
-      } 
-    })
+        products: dataToUpdate,
+      },
+    });
   }
+};
+
+const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
+  const user = req.user as User;
+
+  return {
+    ...data,
+    user: user.id,
+  };
 };
 
 export const Products: CollectionConfig = {
@@ -130,10 +154,10 @@ export const Products: CollectionConfig = {
   },
 
   access: {
-    read: isMyProducts,
+    read: isAdminOrHasAccess,
     create: () => true,
-    update: isAdmin,
-    delete: isAdmin,
+    update: isAdminOrHasAccess,
+    delete: isAdminOrHasAccess,
   },
 
   fields: [
