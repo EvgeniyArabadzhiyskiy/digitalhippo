@@ -27,15 +27,15 @@ const Page = () => {
   const isSeller = searchParams.get("as") === "seller";
   const origin = searchParams.get("origin");
 
-  useEffect(() => {
-    (async () => {
-      const res = await fetch("http://localhost:3000/api/media")
-      const data =  await  res.json()
-      console.log("data:", data.docs);
-      // setUrl(data.docs[0].images[0].image.url)
+  // useEffect(() => {
+  //   (async () => {
+  //     const res = await fetch("http://localhost:3000/api/media")
+  //     const data =  await  res.json()
+  //     console.log("data:", data.docs);
+  //     // setUrl(data.docs[0].images[0].image.url)
       
-    })()
-  },[])
+  //   })()
+  // },[])
 
   const continueAsSeller = () => {
     router.push("?as=seller");
