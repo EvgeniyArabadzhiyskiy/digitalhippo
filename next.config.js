@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  distDir: "build",
   images: {
     remotePatterns: [
       {
@@ -10,9 +11,9 @@ const nextConfig = {
       },
 
       {
-				protocol: "https",
-				hostname: "digitalhippo-zck5.onrender.com",
-			},
+        protocol: "https",
+        hostname: "digitalhippo-zck5.onrender.com",
+      },
     ],
   },
 };
