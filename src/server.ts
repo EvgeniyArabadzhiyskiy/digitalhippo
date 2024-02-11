@@ -12,10 +12,31 @@ import { inferAsyncReturnType } from "@trpc/server";
 import { stripeWebhookHandler } from "./webhooks";
 import { PayloadRequest } from "payload/types";
 import { parse } from "url";
+import cookieParser from "cookie-parser"
+import { User } from "./payload-types";
 
 // https://github.com/payloadcms/payload/blob/main/examples/custom-server/src/server.ts
 
+const getServerUser = async (payloadToken: any ) => {
+  const meRes = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/me`,
+    {
+      headers: {
+        Authorization: `JWT ${payloadToken}`,
+      },
+    }
+  );
+
+  const { user, token } = (await meRes.json()) as {
+    user: User | null;
+    token: string | undefined;
+  };
+
+  return { user, token };
+};
+
 const app = express();
+app.use(cookieParser());
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -65,6 +86,26 @@ const start = async () => {
   });
 
   app.use("/cart", cartRouter);
+
+  const authRouter = express.Router();
+  // authRouter.use(payload.authenticate);   // Можно вместо const { user } = await getServerUser(token);
+
+  authRouter.get("/:page(sign-in|sign-up)", async (req, res, next) => {
+    const { page } = req.params;
+    const token = req.cookies["payload-token"] || null;
+    
+    const { user } = await getServerUser(token);
+    
+    if (user) return res.redirect(`/`);
+    
+    // console.log("Page:", page);
+    // console.log("REDIRECT");
+  
+    // const parseUrl = parse(req.url, true);
+    return nextApp.render(req, res, `/${page}`);
+  });
+
+  app.use("/", authRouter)
 
   if (process.env.NEXT_BUILD) {
     app.listen(PORT, async () => {
