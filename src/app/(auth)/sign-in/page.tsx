@@ -27,16 +27,6 @@ const Page = () => {
   const isSeller = searchParams.get("as") === "seller";
   const origin = searchParams.get("origin");
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const res = await fetch("http://localhost:3000/api/media")
-  //     const data =  await  res.json()
-  //     console.log("data:", data.docs);
-  //     // setUrl(data.docs[0].images[0].image.url)
-      
-  //   })()
-  // },[])
-
   const continueAsSeller = () => {
     router.push("?as=seller");
   };
@@ -140,7 +130,7 @@ const Page = () => {
                   <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
-                    // type="password"
+                    type="password"
                     {...register("password")}
                     className={cn({
                       "focus-visible:ring-red-500": errors.password,
