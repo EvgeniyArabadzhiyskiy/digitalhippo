@@ -90,7 +90,7 @@ const start = async () => {
   const authRouter = express.Router();
   // authRouter.use(payload.authenticate);   // Можно вместо const { user } = await getServerUser(token);
 
-  authRouter.get("/:page(sign-in|sign-up)", async (req, res, next) => {
+  authRouter.get("/:page(sign-in|sign-up)", async (req, res) => {
     const { page } = req.params;
     const token = req.cookies["payload-token"] || null;
     
@@ -98,9 +98,6 @@ const start = async () => {
     
     if (user) return res.redirect(`/`);
     
-    // console.log("Page:", page);
-    // console.log("REDIRECT");
-  
     // const parseUrl = parse(req.url, true);
     return nextApp.render(req, res, `/${page}`);
   });
