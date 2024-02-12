@@ -60,40 +60,33 @@ const isAdminOrHasAccess: Access<any, User> = ({ req: { user } }) => {
 };
 
 const syncUser: AfterChangeHook = async ({ req, doc }) => {
-  // console.log("DOC====", doc);
-  const fullUser = await req.payload.findByID({
-    collection: "users",
-    id: req.user.id,
+  const user = req.user as User;
+
+  const { docs: userProducts } = await req.payload.find({
+    collection: "products",
+    depth: 0,
+    where: {
+      user: {
+        equals: user.id,
+      },
+    },
   });
 
-  if (fullUser && typeof fullUser === "object") {
-    const { products } = fullUser;
+  const allIds = userProducts.map((product) => product.id);
 
-    const allIds = [
-      ...(products?.map((product) =>
-        typeof product === "object" ? product.id : product
-      ) || []),
-    ];
-    console.log("allIds#######", allIds);
+  const createdProductIds = allIds.filter(
+    (id, index) => allIds.indexOf(id) === index
+  );
 
-    const createdProductIds = allIds.filter((id, index) => {
-      console.log("Index:", index);
-      console.log("indexOf(id):", allIds.indexOf(id));
-      return allIds.indexOf(id) === index;
-    });
-    console.log("createdProductIds:::::::::::::::", createdProductIds);
+  const dataToUpdate = [...createdProductIds, doc.id];
 
-    const dataToUpdate = [...createdProductIds, doc.id];
-    // console.log("DataToUpdate:", dataToUpdate);
-
-    await req.payload.update({
-      collection: "users",
-      id: fullUser.id,
-      data: {
-        products: dataToUpdate,
-      },
-    });
-  }
+  await req.payload.update({
+    collection: "users",
+    id: user.id,
+    data: {
+      products: dataToUpdate,
+    },
+  });
 };
 
 const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
