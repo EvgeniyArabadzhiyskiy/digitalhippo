@@ -14,6 +14,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "digitalhippo-zck5.onrender.com",
       },
+
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
   },
 };
