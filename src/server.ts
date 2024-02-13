@@ -12,12 +12,20 @@ import { inferAsyncReturnType } from "@trpc/server";
 import { stripeWebhookHandler } from "./webhooks";
 import { PayloadRequest } from "payload/types";
 import { parse } from "url";
-import cookieParser from "cookie-parser"
+import cookieParser from "cookie-parser";
 import { User } from "./payload-types";
+
+import { mediaManagement } from "payload-cloudinary-plugin";
+
+// const CLOUD_NAME = "dlc78cjak";
+// const CLOUDINARY_API_KEY = "292122393664487";
+// const CLOUDINARY_API_SECRET = "XqU0DMQVO7jf-P1CWoZBY9KvxYg";
+
+const { CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
 
 // https://github.com/payloadcms/payload/blob/main/examples/custom-server/src/server.ts
 
-const getServerUser = async (payloadToken: any ) => {
+const getServerUser = async (payloadToken: any) => {
   const meRes = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/me`,
     {
@@ -37,6 +45,27 @@ const getServerUser = async (payloadToken: any ) => {
 
 const app = express();
 app.use(cookieParser());
+
+app.use(
+  mediaManagement(  
+    {
+      cloud_name: CLOUD_NAME,
+      api_key: CLOUDINARY_API_KEY,
+      api_secret: CLOUDINARY_API_SECRET,
+    },
+    
+    {
+      use_filename: true,
+      unique_filename: true,
+      overwrite: true,
+      folder: "dijitalhippo",
+      // transformation: [
+      //   { width: 250, height: 250, gravity: "faces", crop: "thumb" },
+      //   { radius: "max" },
+      // ],
+    }
+  )
+);
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -93,16 +122,16 @@ const start = async () => {
   authRouter.get("/:page(sign-in|sign-up)", async (req, res) => {
     const { page } = req.params;
     const token = req.cookies["payload-token"] || null;
-    
+
     const { user } = await getServerUser(token);
-    
+
     if (user) return res.redirect(`/`);
-    
+
     // const parseUrl = parse(req.url, true);
     return nextApp.render(req, res, `/${page}`);
   });
 
-  app.use("/", authRouter)
+  app.use("/", authRouter);
 
   if (process.env.NEXT_BUILD) {
     app.listen(PORT, async () => {
