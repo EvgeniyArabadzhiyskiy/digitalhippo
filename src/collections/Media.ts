@@ -3,8 +3,6 @@ import { Access, CollectionConfig, PayloadRequest } from "payload/types";
 
 const isAdminOrHasAccessToImages = (): Access => {
   return async ({ req }) => {
-    // console.log("222222222222222222222222");
-
     const user = req.user as User | undefined;
 
     if (!user) {
@@ -22,6 +20,8 @@ const isAdminOrHasAccessToImages = (): Access => {
     };
   };
 };
+
+//const filePath = 'C:\\Users\\EVGENIY-PC\\Desktop\\Repository\\nodejs-homework-rest-api\\temp\\e-wallet-1280.png'
 
 export const Media: CollectionConfig = {
   slug: "media",
@@ -56,30 +56,37 @@ export const Media: CollectionConfig = {
     delete: isAdminOrHasAccessToImages(),
   },
   upload: {
-    staticURL: "/media",
-    staticDir: "media",
-    // disableLocalStorage: true,
-    // adminThumbnail:'', 
-    imageSizes: [
-      {
-        name: "thumbnail",
-        width: 400,
-        height: 300,
-        position: "centre",
-      },
-      {
-        name: "card",
-        width: 768,
-        height: 1024,
-        position: "centre",
-      },
-      {
-        name: "tablet",
-        width: 1024,
-        height: undefined,
-        position: "centre",
-      },
-    ],
+    // staticURL: "/media",
+    // staticDir: "media",
+
+    disableLocalStorage: true,
+    // adminThumbnail: ({ doc }) => {
+    //   console.log("doc:", doc);
+    //   return 'http://res.cloudinary.com/dlc78cjak/image/upload/v1707841480/avatars/e-wallet-1280_krj3sx.png'
+    // },
+    
+    // adminThumbnail: '/public/thumbnail.jpg', 
+
+    // imageSizes: [
+    //   {
+    //     name: "thumbnail",
+    //     width: 400,
+    //     height: 300,
+    //     position: "centre",
+    //   },
+    //   {
+    //     name: "card",
+    //     width: 768,
+    //     height: 1024,
+    //     position: "centre",
+    //   },
+    //   {
+    //     name: "tablet",
+    //     width: 1024,
+    //     height: undefined,
+    //     position: "centre",
+    //   },
+    // ],
     mimeTypes: ["image/*"],
   },
   fields: [
