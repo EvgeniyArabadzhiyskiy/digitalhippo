@@ -12,6 +12,8 @@ import { Media } from "./collections/Media";
 import { ProductFiles } from "./collections/ProductFile";
 import { Orders } from "./collections/Orders";
 
+import cloudinaryPlugin from "payload-cloudinary-plugin/dist/plugins";
+
 // https://github.com/payloadcms/payload/blob/main/examples/custom-server/src/payload.config.ts
 
 dotenv.config({
@@ -33,6 +35,8 @@ export default buildConfig({
       ogImage: "/thumbnail.jpg",
     },
   },
+
+  plugins:[cloudinaryPlugin()],
   rateLimit: {
     max: 2000,
   },
