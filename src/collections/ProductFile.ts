@@ -90,8 +90,9 @@ export const ProductFiles: CollectionConfig = {
     beforeChange: [addUser],
   },
   upload: {
-    staticURL: "/product_files",
-    staticDir: "product_files",
+    // staticURL: "/product_files",
+    // staticDir: "product_files",
+    disableLocalStorage: true,
     mimeTypes: ["image/*", "font/*", "application/postscript"],
   },
   access: {
