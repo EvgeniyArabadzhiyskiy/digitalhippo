@@ -15,9 +15,7 @@ export const stripeWebhookHandler = async (
 ) => {
   const webhookRequest = req as unknown as WebhookRequest;
   const body = webhookRequest.rawBody;
-  console.log("BODY============", body);
   const signature = req.headers["stripe-signature"] || "";
-  console.log("Signature_____________", signature);
 
   let event;
   try {
@@ -70,7 +68,7 @@ export const stripeWebhookHandler = async (
 
     if (!user) return res.status(404).json({ error: "No such order exists." });
 
-    await payload.update({
+    const {docs} = await payload.update({
       collection: "orders",
       data: {
         _isPaid: true,
@@ -81,28 +79,29 @@ export const stripeWebhookHandler = async (
         },
       },
     });
+    console.log("ID Orders_________________", docs[0].id);
 
     console.log("Success Pay!!!!==================");
     
 
     // send receipt
-    // coment
-    try {
-      const data = await resend.emails.send({
-        from: "DigitalHippo <hello@joshtriedcoding.com>",
-        to: [user.email],
-        subject: "Thanks for your order! This is your receipt.",
-        html: ReceiptEmailHtml({
-          date: new Date(),
-          email: user.email,
-          orderId: session.metadata.orderId,
-          products: order.products as Product[],
-        }),
-      });
-      res.status(200).json({ data });
-    } catch (error) {
-      res.status(500).json({ error });
-    }
+  
+    // try {
+    //   const data = await resend.emails.send({
+    //     from: "DigitalHippo <hello@joshtriedcoding.com>",
+    //     to: [user.email],
+    //     subject: "Thanks for your order! This is your receipt.",
+    //     html: ReceiptEmailHtml({
+    //       date: new Date(),
+    //       email: user.email,
+    //       orderId: session.metadata.orderId,
+    //       products: order.products as Product[],
+    //     }),
+    //   });
+    //   res.status(200).json({ data });
+    // } catch (error) {
+    //   res.status(500).json({ error });
+    // }
   }
 
   return res.status(200).send();
