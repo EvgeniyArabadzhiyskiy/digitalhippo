@@ -17,6 +17,8 @@ export const stripeWebhookHandler = async (
   const body = webhookRequest.rawBody;
   const signature = req.headers["stripe-signature"] || "";
 
+  console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
+
   let event;
   try {
     event = stripe.webhooks.constructEvent(
@@ -68,7 +70,7 @@ export const stripeWebhookHandler = async (
 
     if (!user) return res.status(404).json({ error: "No such order exists." });
 
-    const {docs} = await payload.update({
+    const { docs } = await payload.update({
       collection: "orders",
       data: {
         _isPaid: true,
@@ -82,31 +84,29 @@ export const stripeWebhookHandler = async (
     console.log("ID Orders_________________", docs[0].id);
 
     console.log("Success Pay!!!!==================");
-    
 
     // send receipt
-  
-    // try {
-    //   const data = await resend.emails.send({
-    //     from: "DigitalHippo <hello@joshtriedcoding.com>",
-    //     to: [user.email],
-    //     subject: "Thanks for your order! This is your receipt.",
-    //     html: ReceiptEmailHtml({
-    //       date: new Date(),
-    //       email: user.email,
-    //       orderId: session.metadata.orderId,
-    //       products: order.products as Product[],
-    //     }),
-    //   });
-    //   res.status(200).json({ data });
-    // } catch (error) {
-    //   res.status(500).json({ error });
-    // }
+
+    try {
+      const data = await resend.emails.send({
+        from: "djon4292@gmail.com",
+        to: [user.email],
+        subject: "Thanks for your order! This is your receipt.",
+        html: ReceiptEmailHtml({
+          date: new Date(),
+          email: user.email,
+          orderId: session.metadata.orderId,
+          products: order.products as Product[],
+        }),
+      });
+      res.status(200).json({ data });
+    } catch (error) {
+      res.status(500).json({ error });
+    }
   }
 
   return res.status(200).send();
 };
-
 
 // "build:payload": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts payload build",
 // "build:server": "tsc --project tsconfig.server.json",
