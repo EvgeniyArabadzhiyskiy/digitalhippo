@@ -1,3 +1,4 @@
+import { PrimaryActionEmailHtml } from "../components/emails/PrimaryActionEmail";
 import { User } from "@/payload-types";
 import { CollectionConfig, FieldAccess, Access } from "payload/types";
 
@@ -40,16 +41,26 @@ export const Users: CollectionConfig = {
   },
 
   auth: {
+    // verify: {
+    //   generateEmailHTML: ({ token, user }) => {
+    //     return `<a href='${process.env.NEXT_PUBLIC_SERVER_URL}/verify-email?token=${token}&email=${user.email}'>Verify account</a>`;
+    //   },
+    // },
+
     verify: {
       generateEmailHTML: ({ token, user }) => {
-        return `<a href='${process.env.NEXT_PUBLIC_SERVER_URL}/verify-email?token=${token}&email=${user.email}'>Verify account</a>`;
+        return PrimaryActionEmailHtml({
+          actionLabel: "verify your account",
+          buttonText: "Verify Account",
+          href: `${process.env.NEXT_PUBLIC_SERVER_URL}/verify-email?token=${token}&email=${user.email}`
+        })
       },
     },
+    
     // depth: 0,
   },
   access: {
     read: adminsAndUser,
-    // create: isAdmin,
     create: () => true,
 
     update: adminsAndUser, // isAdmin
