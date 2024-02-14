@@ -14,12 +14,7 @@ import { PayloadRequest } from "payload/types";
 import { parse } from "url";
 import cookieParser from "cookie-parser";
 import { User } from "./payload-types";
-
 import { mediaManagement } from "payload-cloudinary-plugin";
-
-// const CLOUD_NAME = "dlc78cjak";
-// const CLOUDINARY_API_KEY = "292122393664487";
-// const CLOUDINARY_API_SECRET = "XqU0DMQVO7jf-P1CWoZBY9KvxYg";
 
 const { CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
 
