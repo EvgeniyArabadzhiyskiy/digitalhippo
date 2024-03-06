@@ -6,6 +6,7 @@ import { trpc } from "@/trpc/client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import ProductListing from "./ProductListing";
+import LocationTracker from "./LocationTracker";
 
 interface PropsProductReel {
   title: string;
@@ -18,32 +19,6 @@ const FALLBACK_LIMIT = 4;
 
 const ProductReel = (props: PropsProductReel) => {
   const { title, subtitle, href, query } = props;
-  const [lat, setLat] = useState(0)
-  console.log("ProductReel  lat:", lat);
-  const [long, setLong] = useState(0)
-  console.log("ProductReel  long:", long);
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      const watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          setLat(position.coords.latitude);
-          setLong(position.coords.longitude);
-        },
-        (error) => {
-          console.log("Error getting location:", error);
-        }
-      );
-
-      // return () => {
-      //   navigator.geolocation.clearWatch(watchId);
-      // };
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-    }
-  }, []);
-
-  
 
   const {
     data: queryResults,
@@ -79,9 +54,7 @@ const ProductReel = (props: PropsProductReel) => {
 
   return (
     <section className="py-12">
-      {/* <h1 className="font-semibold text-2xl">{String(!!navigator.geolocation)}</h1> */}
-      <h1 className="font-semibold text-2xl">Latitude: {lat}</h1>
-      <h1 className="font-semibold text-2xl">Longitude: {long}</h1>
+      <LocationTracker />
       <div className="md:flex md:item-center md:justify-between mb-4">
         <div className="max-w-2xl px-4 lg:max-w-4xl lg:px-0">
           {/* <Link href={"/test-1"}>Go Test</Link> */}
