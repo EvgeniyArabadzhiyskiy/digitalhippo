@@ -71,6 +71,7 @@ const ProductReel = (props: PropsProductReel) => {
 
   return (
     <section className="py-12">
+      <h1 className="font-semibold text-2xl">{String(!!navigator.geolocation)}</h1>
       <h1 className="font-semibold text-2xl">Latitude: {lat}</h1>
       <h1 className="font-semibold text-2xl">Longitude: {long}</h1>
       <div className="md:flex md:item-center md:justify-between mb-4">
