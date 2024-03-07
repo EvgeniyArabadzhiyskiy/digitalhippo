@@ -58,6 +58,13 @@ const Navbar = async () => {
                     </Link>
                   )}
 
+                  <Link
+                    href="/location"
+                    className={buttonVariants({ variant: "ghost" })}
+                  >
+                    Location
+                  </Link>
+
                   {user ? (
                     <span className="h-6 w-px bg-gray-200" aria-hidden="true" />
                   ) : null}
