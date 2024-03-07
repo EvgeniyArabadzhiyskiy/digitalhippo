@@ -54,7 +54,7 @@ const ProductReel = (props: PropsProductReel) => {
 
   return (
     <section className="py-12">
-      <LocationTracker />
+      
       <div className="md:flex md:item-center md:justify-between mb-4">
         <div className="max-w-2xl px-4 lg:max-w-4xl lg:px-0">
           {/* <Link href={"/test-1"}>Go Test</Link> */}
