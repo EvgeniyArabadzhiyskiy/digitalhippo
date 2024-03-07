@@ -89,6 +89,14 @@ export const Users: CollectionConfig = {
     },
 
     {
+      name: "coords",
+      label: "Coordinates",
+      type: "relationship",
+      relationTo: "coords",
+      hasMany: true,
+    },
+
+    {
       name: "role",
       defaultValue: "user",
       required: true,
