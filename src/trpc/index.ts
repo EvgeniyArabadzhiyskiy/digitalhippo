@@ -5,6 +5,7 @@ import { QueryValidator } from "../lib/validators/query-validator";
 import { getPayloadClient } from "../get-payload";
 import { paymentRouter } from "./payment-router";
 import { PayloadRequest } from "payload/types";
+import { locationRouter } from "./location-router";
 
 interface User {
   name: string;
@@ -43,6 +44,7 @@ export const appRouter = router({
 
   auth: authRouter,
   payment: paymentRouter,
+  location: locationRouter,
 
   getInfinityProducts: publicProcedure
     .input(
