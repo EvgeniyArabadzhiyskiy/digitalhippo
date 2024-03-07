@@ -12,7 +12,7 @@ export interface Config {
     products: Product;
     sites: Site;
     media: Media;
-    pages: Page;
+    coords: Coord;
     product_files: ProductFile;
     orders: Order;
     'payload-preferences': PayloadPreference;
@@ -24,6 +24,7 @@ export interface User {
   id: string;
   products?: (string | Product)[] | null;
   product_files?: (string | ProductFile)[] | null;
+  coords?: (string | Coord)[] | null;
   role: 'admin' | 'user';
   updatedAt: string;
   createdAt: string;
@@ -59,6 +60,13 @@ export interface Product {
 export interface ProductFile {
   id: string;
   user?: (string | null) | User;
+  cloudinary?: {
+    public_id?: string | null;
+    original_filename?: string | null;
+    format?: string | null;
+    secure_url?: string | null;
+    resource_type?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -71,6 +79,13 @@ export interface ProductFile {
 export interface Media {
   id: string;
   user?: (string | null) | User;
+  cloudinary?: {
+    public_id?: string | null;
+    original_filename?: string | null;
+    format?: string | null;
+    secure_url?: string | null;
+    resource_type?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -79,51 +94,21 @@ export interface Media {
   filesize?: number | null;
   width?: number | null;
   height?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    tablet?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
+}
+export interface Coord {
+  id: string;
+  user?: (string | null) | User;
+  latitude: number;
+  longitude: number;
+  timestamp: string;
+  updatedAt: string;
+  createdAt: string;
 }
 export interface Site {
   id: string;
   title: string;
   updatedAt: string;
   createdAt: string;
-}
-export interface Page {
-  id: string;
-  title: string;
-  content?:
-    | {
-        [k: string]: unknown;
-      }[]
-    | null;
-  site: string | Site;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 export interface Order {
   id: string;
